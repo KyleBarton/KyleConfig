@@ -1,4 +1,16 @@
 #!/bin/bash
+# Check on dependencies
+if ! type "git" &> /dev/null;
+then
+	echo "git not installed, exiting"
+	exit 1
+fi
+#TODO Dependencies
+# python
+## pretty sure this is for one of my plugins
+# YCM dependencies
+
+
 # Resources location TODO read from cmd line optionally
 RESOURCES="$(dirname $0)/resources"
 # Values TODO read from config
