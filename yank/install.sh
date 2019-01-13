@@ -4,4 +4,6 @@ then
 	exit 1
 fi
 
-echo "brew install yank"
+echo "Installing yank..."
+brew install yank
+echo "finished!"
