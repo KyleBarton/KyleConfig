@@ -9,6 +9,7 @@ fi
 # python
 ## pretty sure this is for one of my plugins
 # YCM dependencies
+## For JS: Tern
 
 
 # Resources location TODO read from cmd line optionally
