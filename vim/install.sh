@@ -6,7 +6,8 @@ then
 	exit 1
 fi
 #TODO Dependencies
-# python
+# python?
+# fzf (brew)
 ## pretty sure this is for one of my plugins
 # YCM dependencies
 ## For JS: Tern
