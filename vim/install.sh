@@ -72,4 +72,7 @@ else
 	echo ".vimrc file does not exist, press enter to create one [FAKE]"
 fi
 
-
+#
+#Here's a way to git clone
+#cat vim/resources/plugins.vim | grep 'Plugin' | sed 's/Plugin //g' | sed "s/'//g" | xargs -I {} echo "https://github.com/{}"
+#
