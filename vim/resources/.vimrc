@@ -20,6 +20,8 @@ let NERDTreeShowHidden=1
 " Keeps lastline up and running
 set laststatus=2
 
+set completeopt-=preview
+
 " This makes the cursor thin in insert mode, see http://vim.wikia.com/wiki/Change_cursor_shape_in_different_modes
 let &t_SI = "\<Esc>]50;CursorShape=1\x7"
 let &t_SR = "\<Esc>]50;CursorShape=2\x7"
