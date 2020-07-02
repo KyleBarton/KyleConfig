@@ -27,10 +27,11 @@ values."
    ;; If non-nil layers with lazy install support are lazy installed.
    ;; List of additional paths where to look for configuration layers.
    ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
-   dotspacemacs-configuration-layer-path '()
+   dotspacemacs-configuration-layer-path '("~/workplace/Emacs-org-issues-mode/src/Emacs-org-issues-mode/spacemacs/")
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     html
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -53,12 +54,13 @@ values."
      ;; version-control
      ;;neotree
      rust
+     issues
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(company lsp-mode lsp-ui)
+   dotspacemacs-additional-packages '(company lsp-mode lsp-ui lsp-java emacs-amazon-libs)
    ;; A list of packages that cannot be updated.
 
    ;; A list of packages that will not be installed and loaded.
@@ -321,6 +323,13 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+  ;; Amazon Stuff
+  (require 'amz-common)
+  (setq auto-mode-alist (cons '("\\.cfg\\'" . brazil-config-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("\\.dfg\\'" . brazil-config-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("/Config\\'" . brazil-config-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("/packageInfo\\'" . brazil-config-mode) auto-mode-alist))
+  ;;
   ;; evil-escape
   (setq-default evil-escape-key-sequence "fd")
   ;; lsp
@@ -332,8 +341,6 @@ you should place your code here."
 
   (evil-define-key 'normal lsp-mode-map (kbd "gr") 'lsp-find-references)
   (evil-define-key 'normal lsp-mode-map (kbd "rr") 'lsp-rename)
-  ;; (define-key lsp-mode-map (kbd "gr") 'lsp-find-references)
-  ;; (define-key lsp-mode-map (kbd "rr") 'lsp-rename)
   ;;;; lsp::Rust
   (add-hook 'rust-mode-hook (
                              lambda ()
@@ -345,10 +352,18 @@ you should place your code here."
                                    (setq lsp-ui-sideline-show-diagnostics 't)
                                    )
   )
-  ;; (add-hook 'rust-mode-hook #'lsp)
-  ;; (add-hook 'rust-mode-hook #'lsp-ui-sideline-mode)
-  ;; (setq-default lsp-rust-server 'rls)
-  ;; (setq-default lsp-ui-sideline-mode 't)
+  ;;;; lsp::Java
+  (require 'lsp-java)
+  (add-hook 'java-mode-hook (
+                             lambda ()
+                                    (eval (lsp))
+                                    (eval (lsp-ui-doc-enable nil))
+                                    (setq lsp-ui-sideline-show-hover 't)
+                             ))
+  ;;;;JumpHandlers needed
+  (spacemacs|define-jump-handlers java-mode)
+  (spacemacs|define-jump-handlers nxml-mode) ;; this is wrong and needs work :/
+  (add-to-list 'spacemacs-jump-handlers-java-mode 'lsp-find-definition) ;; might want this to be more custom later
 
   ;; key-mappings
   (define-key evil-normal-state-map (kbd "gb") 'evil-jump-backward)
@@ -375,7 +390,7 @@ you should place your code here."
  '(helm-completion-style (quote emacs))
  '(package-selected-packages
    (quote
-    (smeargle orgit magit-gitflow magit-popup helm-gitignore gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit git-commit with-editor transient lsp-ui ht dash-functional company-lsp company lsp-mode toml-mode racer pos-tip cargo rust-mode mmm-mode markdown-toc markdown-mode gh-md xterm-color shell-pop multi-term eshell-z eshell-prompt-extras esh-help ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired f evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
+    (org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download htmlize gnuplot emacs-amazon-libs web-mode tagedit slim-mode scss-mode sass-mode pug-mode helm-css-scss haml-mode emmet-mode lsp-java treemacs pfuture posframe smeargle orgit magit-gitflow magit-popup helm-gitignore gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit git-commit with-editor transient lsp-ui ht dash-functional company-lsp company lsp-mode toml-mode racer pos-tip cargo rust-mode mmm-mode markdown-toc markdown-mode gh-md xterm-color shell-pop multi-term eshell-z eshell-prompt-extras esh-help ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired f evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
