@@ -1,244 +1,395 @@
-* This is a configuration file
-** TODO Need to add all config here more gracefully
+* Kyle's Configuration File
+** meta-config
+Stuff related to .emacs, .emacs.d, and generally making config work easier
+*** .emacs.d
+I like to have the emacs directory set relative to the .emacs file, and, correspondingly, this file:
 #+BEGIN_SRC emacs-lisp
-
-  ;; Theme, Font, & Appearance
-  (use-package poet-theme
-    :config
-    (load-theme 'poet t)
-    (add-hook 'text-mode-hook
-	     (lambda ()
-	      (variable-pitch-mode 1))))
-
-  ;; Evil
-
-  (use-package evil
-    :init
-    (setq evil-want-C-u-scroll t)
-    :config
-    (setq evil-shift-width 2) ;; lets be honest I prefer it this way
-    (evil-mode 1))
-
-  (use-package evil-escape
-    :config
-    (evil-escape-mode))
-
-  ;; Evil-nerd commenter does a few things that comment-line and comment-dwim don't (or at least not without more work):
-  ;; 1. It handles regions and lines interchangeably without issue
-  ;; 2. Keeps the cursor on the line commented
-  ;; 3. Doesn't comment the next line down in visual line mode
-  (use-package evil-nerd-commenter)
-
-  ;; Ivy (comparing with helm)
-  (use-package ivy
-    :config
-    (ivy-mode)
-    (setq ivy-use-virtual-buffers t)
-    (setq enable-recursive-minibuffers t)
-    (setq ivy-use-selectable-prompt t))
-
-  (use-package counsel)
-
-  ;; Creates a floating M-x frame
-  (use-package ivy-posframe
-    :config
-    (setq ivy-posframe-display-functions-alist
-	'((swiper                               . ivy-posframe-display-at-point)
-	  ;;(complete-symbol                    . ivy-posframe-display-at-point)
-	  ;;(t                                  . ivy-posframe-display)
-	  (counsel-M-x                          . ivy-posframe-display-at-window-center)
-	  (counsel-find-file                    . ivy-posframe-display-at-window-center)
-	  (ivy-switch-buffer                    . ivy-posframe-display-at-window-center)
-	  (counsel-describe-function            . ivy-posframe-display-at-window-center)
-	  (counsel-describe-variable            . ivy-posframe-display-at-window-center)
-	  (counsel-projectile-find-file         . ivy-posframe-display-at-window-center)
-	  (counsel-projectile-switch-to-buffer  . ivy-posframe-display-at-window-center)
-	  (counsel-projectile-switch-project    . ivy-posframe-display-at-window-center)
-	  (counsel-projectile-find-dir          . ivy-posframe-display-at-window-center)
-	  (counsel-projectile-ag                . ivy-posframe-display-at-window-center)))
-    (ivy-posframe-mode 1))
-
-  ;; Projectile!
-  (use-package projectile
-    :ensure t
-    :config
-    (setq projectile-completion-system 'ivy)
-    (projectile-mode +1))
-
-  ;; Trying counsel-projectile so I can use POSFrame on everything
-  (use-package counsel-projectile
-    :config
-    (counsel-projectile-mode))
-
-  ;; all-the-icons!
-  (use-package all-the-icons
-    :config
-    (unless (member "all-the-icons" (font-family-list))
-      (all-the-icons-install-fonts t)))
-
-  ;; neotree (mostly for use with projectile)
-  (use-package neotree
-    :init
-    (setq neo-show-hidden-files t)
-    ;; confirm to delete files, but not to create them
-    (setq neo-confirm-create-file 'off-p)
-    ;; Use all-the-icons if you're not on a terminal
-    (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
-    :config
-    (defun neotree-projectile ()
-    "Open NeoTree using the project root, focus on current buffer file.
-  Borrowed from a config here: https://www.emacswiki.org/emacs/NeoTree.
-  If neotree is open, closes it."
-      (interactive)
-      (if (neo-global--window-exists-p)
-	  (neotree-toggle)
-	  (let ((project-dir (projectile-project-root))
-		(file-name (buffer-file-name)))
-	    (if project-dir
-		(progn
-		  (neotree-dir project-dir)
-		  (neotree-find file-name))
-	      (message "Could not find git project root.")))))
-
-    (add-hook 'neotree-mode-hook
-	      (lambda ()
-		(define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
-		(define-key evil-normal-state-local-map (kbd "gr") 'neotree-refresh)
-		(define-key evil-normal-state-local-map (kbd "c") 'neotree-create-node)
-		(define-key evil-normal-state-local-map (kbd "d") 'neotree-delete-node))))
-
-  ;; Magit -- still need to set up shortcuts, but I know I want it
-  ;;;; TODO at least evil-ify it ya know
-  (use-package magit)
-
-  ;; Major Modes
-
-  ;;;; Rust
-  ;;TODO need:
-  ;; indentation stuff and evil-shift-width integration
-  ;; lsp stuff
-  (use-package rust-mode)
-
-  ;; TODO need to figure out how to ensure the right packages here
-  ;; One idea would be to send commands to these key maps from within use-package
-
-  (defvar help-map (make-sparse-keymap)
-    "Help & describe functions. General documentation")
-  (define-key help-map (kbd "f") 'counsel-describe-function)
-  (define-key help-map (kbd "v") 'counsel-describe-variable)
-  (define-key help-map (kbd "k") 'describe-key)
-
-  (defvar buffer-map (make-sparse-keymap)
-    "Buffer manipulation")
-  (define-key buffer-map (kbd "d") 'kill-current-buffer)
-  (define-key buffer-map (kbd "b") 'ivy-switch-buffer)
-
-  (defvar window-map (make-sparse-keymap)
-    "Window manipulation")
-  (define-key window-map (kbd "k") 'windmove-up)
-  (define-key window-map (kbd "j") 'windmove-down)
-  (define-key window-map (kbd "h") 'windmove-left)
-  (define-key window-map (kbd "l") 'windmove-right)
-  (define-key window-map (kbd "d") 'delete-window)
-
-  (defvar file-map (make-sparse-keymap)
-    "File manipulation")
-  (define-key file-map (kbd "s") 'save-buffer)
-  (define-key file-map (kbd "f") 'counsel-find-file)
-
-  (defvar dired-activate-map (make-sparse-keymap)
-    "Activating dired in various locations")
-  (define-key dired-activate-map (kbd ".") ;; open dired in current dir
-    (lambda ()
-      (interactive)
-      (dired default-directory)))
-  (define-key dired-activate-map (kbd "p") ;; open dired in project dir
-    (lambda ()
-      (interactive)
-      (dired (projectile-project-root))))
-
-  ;; additional projectile addons here
-  (define-key projectile-command-map (kbd "t") 'neotree-projectile)
-
-  (defvar top-level-map (make-sparse-keymap)
-    "Top level map to send functions to delegate maps")
-  ;; direct commands (no need for a submap here yet
-  (define-key top-level-map (kbd "SPC") 'counsel-M-x)
-  (define-key top-level-map (kbd "cl") 'evilnc-comment-or-uncomment-lines)
-  (define-key top-level-map (kbd "u") 'universal-argument)
-  (define-key top-level-map (kbd "ee") 'eshell)
-  ;; To submaps
-  (define-key top-level-map (kbd "w") window-map)
-  (define-key top-level-map (kbd "f") file-map)
-  (define-key top-level-map (kbd "b") buffer-map)
-  (define-key top-level-map (kbd "h") help-map)
-  (define-key top-level-map (kbd "d") dired-activate-map)
-  ;; Projectile has its own submap
-  (define-key top-level-map (kbd "p") projectile-command-map)
-
-  (evil-define-key 'motion 'global (kbd "SPC") top-level-map)
-
-  ;; dired
-
-  ;; kills subdir, puts cursor on its location in parent subdir
-  (defun dired-retreat-from-subdir ()
-    (interactive)
-    (let ((parent-dir (dired-current-directory)))
-      (dired-kill-subdir)
-      (dired-goto-file parent-dir)))
-
-  ;; I hate pretty much all dired defaults.
-  ;; Maybe try to deactivate the default keymap somehow?
-  ;; Overall keybindings look good here, but I should change this to match my mental model:
-  ;; I'd like ONE dired buffer, filled with subdirs as needed. Quick command (SPC-d-d) sends
-  ;; me back to that buffer. RET is mapped to opening a subdir for dirs, and opening a file (non-alternate)
-  ;; for files. This could make dired my central "shell" command center if I can create a command to run
-  ;; a shell command from 'dired-current-directory
-  (put 'dired-find-alternate-file 'disabled nil) ;; why on earth is this disabled?
-  (define-key dired-mode-map (kbd "SPC") top-level-map)
-  (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)
-  ;; Go up a dir unless you're in a subdir, in which case collapse it
-  (define-key dired-mode-map (kbd "u")
-    (lambda ()
-      (interactive)
-      (if (equal (dired-current-directory) (expand-file-name default-directory))
-	;; we're at the top level, go to ".."
-	(find-alternate-file "..")
-	;; else, we're in a subdir, so close it
-	(dired-retreat-from-subdir))))
-  (define-key dired-mode-map (kbd "n") 'evil-search-next)
-  (define-key dired-mode-map (kbd "w") 'evil-forward-word-begin)
-  (define-key dired-mode-map (kbd "v") 'evil-visual-char)
-  (define-key dired-mode-map (kbd "x") 'dired-retreat-from-subdir)
-  (define-key dired-mode-map (kbd "TAB") 'dired-maybe-insert-subdir)
-  (define-key dired-mode-map (kbd "$") 'evil-end-of-line)
-
-  ;;;;;;;;;;;;;
-  ;; IDEAS/TODOS (Misc)
-  ;; - Projectile (DONE)
-  ;;     - Would really like to get TreeMacs working with Projectile (DONE)
-  ;;	   - Went with neotree after all, not loving TreeMacs sticky workspace design (DONE)
-  ;;	   - All-the-icons (install once to reduce startup time) (DONE)
-  ;; - Major modes:
-  ;;     - Python
-  ;;     - Rust (in progress)
-  ;;     - Typescript/Javascript
-  ;;     - Java
-  ;;     - C#
-  ;;     - Ruby
-  ;; - Org mode -- TODO I think this needs to come next; this file is getting outrageous
-  ;; - Good news! It looks like this comes for free with emacs. See https://harryrschwartz.com/2016/02/15/switching-to-a-literate-emacs-configuration for a starting point :)
-  ;; - Get Literate setup running for init.el
-  ;;     - Good time to organize a bit
-  ;; - Improve themes/fonts
-  ;; - Neotree/some other NERDTree-like thing (DONE)
-  ;; - Eshell/terminals
-  ;; - More advanced search w/ivy
-  ;; - Iedit/some multi-editor
-  ;; - Line jumper/general buffer nav work
-  ;; - Magit
-  ;; - TRAMP
-  ;; - Dired! How did I forget Dired!? (DONE) -- though there's much more I could do here
-  ;;;;;;;;;;;;;
-
+(setq user-emacs-directory
+      (file-truename (concat default-directory ".emacs.d/")))
 #+END_SRC
+*** Editing config
+Work on the below once you've gone live, so you don't have to think
+too hard about the alternative files right now
+**** TODO Interactive function that takes me to configuration.org
+**** TODO Interactive function that reloads config
+** Basic visual preferences
+#+BEGIN_SRC emacs-lisp
+(setq inhibit-startup-message t)
+(scroll-bar-mode -1)
+(tool-bar-mode -1)
+(tooltip-mode -1)
+(menu-bar-mode -1)
+#+END_SRC
+** Packages
+*** Use-package
+**** Initialize package with correct archives
+ #+BEGIN_SRC emacs-lisp
+ (require 'package)
+ (setq package-archives `(("gnu" . "https://elpa.gnu.org/packages/")
+			  ("melpa" . "https://melpa.org/packages/")
+			  ("org" . "https://orgmode.org/elpa/")))
+
+ (package-initialize)
+ (unless package-archive-contents
+   (package-refresh-contents))
+ #+END_SRC
+**** Install use-package
+ Everything after this should use use-package for management
+ #+BEGIN_SRC emacs-lisp
+ (unless (package-installed-p 'use-package)
+   (package-install 'use-package))
+
+ (require 'use-package)
+ (setq use-package-always-ensure t)
+ #+END_SRC
+*** Theming
+**** Poet
+ #+BEGIN_SRC emacs-lisp
+   (use-package poet-theme
+     :config
+     (load-theme 'poet t)
+     (add-hook 'text-mode-hook
+	      (lambda ()
+	       (variable-pitch-mode 1))))
+ #+END_SRC
+**** Fonts
+***** all-the-icons
+ Using font-family-list to download ATI only once
+ #+BEGIN_SRC emacs-lisp
+   (use-package all-the-icons
+     :config
+     (unless (member "all-the-icons" (font-family-list))
+       (all-the-icons-install-fonts t)))
+ #+END_SRC
+*** Evil
+**** Basic package
+ #+BEGIN_SRC emacs-lisp
+   (use-package evil
+     :init
+     (setq evil-want-C-u-scroll t)
+     :config
+     (setq evil-shift-width 2) ;; lets be honest I prefer it this way
+     (evil-mode 1))
+ #+END_SRC
+**** evil-escape
+ #+BEGIN_SRC emacs-lisp
+   (use-package evil-escape
+     :config
+     (evil-escape-mode))
+ #+END_SRC
+**** evil-nerd-commenter
+ evil-nerd-commenter does a few things that comment-line and comment-dwim don't (or at least not without more work):
+ - It handles regions and lines interchangeably without issue
+ - It keeps the cursor on the line commented
+ - It doesn't comment the next line down in visual line mode
+ #+BEGIN_SRC emacs-lisp
+   (use-package evil-nerd-commenter)
+ #+END_SRC
+*** Ivy & such
+**** Base Ivy
+ #+BEGIN_SRC emacs-lisp
+   (use-package ivy
+     :config
+     (ivy-mode)
+     (setq ivy-use-virtual-buffers t)
+     (setq ivy-count-format "(%d/%d) ")
+     (setq enable-recursive-minibuffers t)
+     (setq ivy-use-selectable-prompt t))
+ #+END_SRC
+**** Counsel
+ #+BEGIN_SRC emacs-lisp
+   (use-package counsel)
+ #+END_SRC
+**** Posframe
+ Creates a floating frame for ivy-related searches
+ #+BEGIN_SRC emacs-lisp
+   ;; Creates a floating M-x frame
+   (use-package ivy-posframe
+     :config
+     (setq ivy-posframe-display-functions-alist
+	 '((swiper                               . ivy-posframe-display-at-point)
+	   ;;(complete-symbol                    . ivy-posframe-display-at-point)
+	   ;;(t                                  . ivy-posframe-display)
+	   (counsel-M-x                          . ivy-posframe-display-at-window-center)
+	   (counsel-rg                           . ivy-posframe-display-at-window-center)
+	   (counsel-ag                           . ivy-posframe-display-at-window-center)
+	   (counsel-find-file                    . ivy-posframe-display-at-window-center)
+	   (ivy-switch-buffer                    . ivy-posframe-display-at-window-center)
+	   (counsel-describe-function            . ivy-posframe-display-at-window-center)
+	   (counsel-describe-variable            . ivy-posframe-display-at-window-center)
+	   (counsel-projectile-find-file         . ivy-posframe-display-at-window-center)
+	   (counsel-projectile-switch-to-buffer  . ivy-posframe-display-at-window-center)
+	   (counsel-projectile-switch-project    . ivy-posframe-display-at-window-center)
+	   (counsel-projectile-find-dir          . ivy-posframe-display-at-window-center)
+	   (counsel-projectile-ag                . ivy-posframe-display-at-window-center)
+	   (counsel-fzf                          . ivy-posframe-display-at-window-center)
+	   (counsel-projectile-rg                . ivy-posframe-display-at-window-center)))
+     (ivy-posframe-mode 1))
+ #+END_SRC
+*** Projectile
+**** Base projectile
+ #+BEGIN_SRC emacs-lisp
+   (use-package projectile
+     :ensure t
+     :config
+     (setq projectile-completion-system 'ivy)
+     (projectile-mode +1))
+ #+END_SRC
+**** Counsel projectile
+ So that I can use posframe here as well
+ #+BEGIN_SRC emacs-lisp
+   (use-package counsel-projectile
+     :config
+     (counsel-projectile-mode))
+ #+END_SRC
+*** Neotree
+ #+BEGIN_SRC emacs-lisp
+   (use-package neotree
+     :init
+     (setq neo-show-hidden-files t)
+     ;; confirm to delete files, but not to create them
+     (setq neo-confirm-create-file 'off-p)
+     ;; Use all-the-icons if you're not on a terminal
+     (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+     :config
+     (defun neotree-projectile ()
+     "Open NeoTree using the project root, focus on current buffer file.
+   Borrowed from a config here: https://www.emacswiki.org/emacs/NeoTree.
+   If neotree is open, closes it."
+       (interactive)
+       (if (neo-global--window-exists-p)
+	   (neotree-toggle)
+	   (let ((project-dir (projectile-project-root))
+		 (file-name (buffer-file-name)))
+	     (if project-dir
+		 (progn
+		   (neotree-dir project-dir)
+		   (neotree-find file-name))
+	       (message "Could not find git project root.")))))
+
+     (add-hook 'neotree-mode-hook
+	       (lambda ()
+		 (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
+		 (define-key evil-normal-state-local-map (kbd "gr") 'neotree-refresh)
+		 (define-key evil-normal-state-local-map (kbd "c") 'neotree-create-node)
+		 (define-key evil-normal-state-local-map (kbd "d") 'neotree-delete-node))))
+ #+END_SRC
+*** TODO Magit
+**** Base Package
+ Still much to do here. Need to evil-ify it, for one
+#+BEGIN_SRC emacs-lisp
+(use-package magit
+  :config
+  (setq-default magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1))
+(use-package evil-magit)
+#+END_SRC
+**** Magit Customizations
+I don't like the control-oriented confirm/cancel commands when working
+with commit messages. Stealing the key-mapping from spacemacs here
+because I don't use the comma in my day-to-day editing
+#+BEGIN_SRC emacs-lisp
+(defvar with-editor-custom-map (make-sparse-keymap)
+  "I want a with-editor leader that isn't ctrl-oriented")
+(define-key with-editor-custom-map (kbd "k") 'with-editor-cancel)
+(define-key with-editor-custom-map (kbd "c") 'with-editor-finish)
+
+(add-hook 'with-editor-mode-hook
+	  (lambda ()
+	    (define-key evil-motion-state-local-map (kbd ",") with-editor-custom-map)))
+#+END_SRC
+*** TODO Major-modes
+ Need to fill this out
+ - Major modes that need work:
+     - Python
+     - Rust (in progress)
+     - Typescript/Javascript
+     - Java
+     - C#
+     - Ruby
+**** rust
+ #+BEGIN_SRC emacs-lisp
+   (use-package rust-mode)
+ #+END_SRC
+
+** TODO Code Editing
+This is where you can set up all the lsp stuff
+** Org
+*THISISBOLD* /this italics/ +this strikethrough+ _this underline_
+#+BEGIN_SRC emacs-lisp
+(setq-default org-startup-indented 't)
+(setq-default org-pretty-entities 't)
+(setq-default org-log-done 'time)
+(setq-default org-startup-with-inline-images 't)
+(evil-define-key 'normal org-mode-map (kbd "t") 'org-todo)
+;; Don't evil-auto-indent in org mode pls
+(add-hook 'org-mode-hook (
+			  lambda ()
+				 (setq evil-auto-indent nil)))
+#+END_SRC
+** Key Maps
+*** Sub-maps
+**** Help Functions
+ #+BEGIN_SRC emacs-lisp
+   (defvar help-map (make-sparse-keymap)
+     "Help & describe functions. General documentation")
+   (define-key help-map (kbd "f") 'counsel-describe-function)
+   (define-key help-map (kbd "v") 'counsel-describe-variable)
+   (define-key help-map (kbd "k") 'describe-key)
+ #+END_SRC
+**** Buffer Manipulation
+ #+BEGIN_SRC emacs-lisp
+   (defvar buffer-map (make-sparse-keymap)
+     "Buffer manipulation")
+   (define-key buffer-map (kbd "d") 'kill-current-buffer)
+   (define-key buffer-map (kbd "b") 'ivy-switch-buffer)
+ #+END_SRC
+**** Window Manipulation
+ #+BEGIN_SRC emacs-lisp
+   (defvar window-map (make-sparse-keymap)
+     "Window manipulation")
+   (define-key window-map (kbd "k") 'windmove-up)
+   (define-key window-map (kbd "j") 'windmove-down)
+   (define-key window-map (kbd "h") 'windmove-left)
+   (define-key window-map (kbd "l") 'windmove-right)
+   (define-key window-map (kbd "d") 'delete-window)
+ #+END_SRC
+**** File Manipulation
+ #+BEGIN_SRC emacs-lisp
+   (defvar file-map (make-sparse-keymap)
+     "File manipulation")
+   (define-key file-map (kbd "s") 'save-buffer)
+   (define-key file-map (kbd "f") 'counsel-find-file)
+ #+END_SRC
+**** Dired Maps
+***** Dired Activation/Control
+ #+BEGIN_SRC emacs-lisp
+   (defvar dired-activate-map (make-sparse-keymap)
+     "Activating dired in various locations")
+   (define-key dired-activate-map (kbd ".") ;; open dired in current dir
+     (lambda ()
+       (interactive)
+       (dired default-directory)))
+   (define-key dired-activate-map (kbd "p") ;; open dired in project dir
+     (lambda ()
+       (interactive)
+       (dired (projectile-project-root))))
+ #+END_SRC
+***** Dired Mode
+ Simple function to retreat out of a dired subdir
+ #+BEGIN_SRC emacs-lisp
+   ;; kills subdir, puts cursor on its location in parent subdir
+   (defun dired-retreat-from-subdir ()
+     (interactive)
+     (let ((parent-dir (dired-current-directory)))
+       (dired-kill-subdir)
+       (dired-goto-file parent-dir)))
+ #+END_SRC
+
+  I hate pretty much all dired defaults.
+  Maybe try to deactivate the default keymap somehow?
+  Overall keybindings look good here, but I should change this to match my mental model:
+  I'd like ONE dired buffer, filled with subdirs as needed. Quick command (SPC-d-d) sends
+  me back to that buffer. RET is mapped to opening a subdir for dirs, and opening a file (non-alternate)
+  for files. This could make dired my central "shell" command center if I can create a command to run
+  a shell command from 'dired-current-directory
+ #+BEGIN_SRC emacs-lisp
+   (put 'dired-find-alternate-file 'disabled nil) ;; why on earth is this disabled?
+   (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)
+   ;; Go up a dir unless you're in a subdir, in which case collapse it
+   (define-key dired-mode-map (kbd "u")
+     (lambda ()
+       (interactive)
+       (if (equal (dired-current-directory) (expand-file-name default-directory))
+	 ;; we're at the top level, go to ".."
+	 (find-alternate-file "..")
+	 ;; else, we're in a subdir, so close it
+	 (dired-retreat-from-subdir))))
+   (define-key dired-mode-map (kbd "n") 'evil-search-next)
+   (define-key dired-mode-map (kbd "w") 'evil-forward-word-begin)
+   (define-key dired-mode-map (kbd "v") 'evil-visual-char)
+   (define-key dired-mode-map (kbd "x") 'dired-retreat-from-subdir)
+   (define-key dired-mode-map (kbd "TAB") 'dired-maybe-insert-subdir)
+   (define-key dired-mode-map (kbd "$") 'evil-end-of-line)
+ #+END_SRC
+**** Search
+Note: Probably best to write this stuff in init.el, and move over afterwards
+Intense filesystem/symbol searches here.
+- Assumes ag installed
+- Assumes fzf installed
+#+BEGIN_SRC emacs-lisp
+(defvar search-map (make-sparse-keymap)
+  "Search utilities")
+(define-key search-map (kbd "f") 'counsel-fzf)
+(define-key search-map (kbd "s") 'counsel-ag)
+#+END_SRC
+**** Project Manipulation
+Extending/customizing the projectile command map as needed here.Using
+ag for now because it's a little more ubiquitous, but I can move over
+to ripgrep if there's a compelling reason.
+The below search function basically mimics counsel-projectile-ag, but
+for some reason posframe isn't working with counsel-projectile-ag, but
+does with counsel-ag.
+*NOTE* The below mapping causes an error on reload because projectile
+tries to map things behind "s". No effect on my workflow for now, but
+there error will happen everytime I reload config
+#+BEGIN_SRC emacs-lisp
+(define-key projectile-command-map (kbd "t") 'neotree-projectile)
+(define-key projectile-command-map (kbd "s")
+  (lambda ()
+    (interactive)
+    (counsel-ag nil (projectile-project-root))))
+#+END_SRC
+*** Top-level-map
+It needs to happen after submaps are defined
+#+BEGIN_SRC emacs-lisp
+(defvar top-level-map (make-sparse-keymap)
+"Top level map to send functions to delegate maps")
+;; direct commands (no need for a submap here yet
+(define-key top-level-map (kbd "SPC") 'counsel-M-x)
+(define-key top-level-map (kbd "cl") 'evilnc-comment-or-uncomment-lines)
+(define-key top-level-map (kbd "u") 'universal-argument)
+(define-key top-level-map (kbd "ee") 'eshell)
+;; To submaps
+(define-key top-level-map (kbd "w") window-map)
+(define-key top-level-map (kbd "f") file-map)
+(define-key top-level-map (kbd "b") buffer-map)
+(define-key top-level-map (kbd "h") help-map)
+(define-key top-level-map (kbd "d") dired-activate-map)
+(define-key top-level-map (kbd "s") search-map)
+;; Projectile has its own submap
+(define-key top-level-map (kbd "p") projectile-command-map)
+
+(evil-define-key 'motion 'global (kbd "SPC") top-level-map)
+;; Info mode; another special one
+(evil-define-key 'motion Info-mode-map (kbd "SPC") top-level-map)
+;; this is a problem from an organization standpoint. It should live in the dired space
+(define-key dired-mode-map (kbd "SPC") top-level-map)
+;; same with magit
+(define-key magit-status-mode-map (kbd "SPC") top-level-map)
+#+END_SRC
+** Further work needed
+*** TODO Organize this file a little better
+**** DONE Load packages in a single section
+CLOSED: [2020-10-27 Tue 22:39]
+**** TODO Organize the remainder by domain
+**** TODO Finally, key maps at the end
+*** DONE Org-mode
+CLOSED: [2020-10-27 Tue 22:38]
+Enable pretty mode, indents, etc
+*** TODO Eshell/terminals
+Get aliases set up, pretty prompt, maybe hook into dired/magit nicely
+*** TODO Advanced Ivy
+Better search features/shortcuts, really just scratching the surface here I think
+**** DONE Get +counsel-locate+ counsel-fzf up and running for intense filesystem file searches
+CLOSED: [2020-10-28 Wed 21:55]
+**** DONE Get counsel-ag up for both large filesystem symbol searches, and project scoping
+CLOSED: [2020-10-28 Wed 21:55]
+**** TODO Move to ivy-regex-ignore-orer for some searches (functions/variables/M-x, probably)
+*** TODO Multi-cursor editor
+IEdit perhaps? Look at alternatives
+*** TODO Line jump/buffer nav
+avy maybe? Though it seems to struggle to perform with lsp
+*** TODO TRAMP
+Need to find an ergonomic way to cycle through known connections without typing out the whole ssh syntax
+*** TODO Magit
+Like, any of it
