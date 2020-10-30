@@ -31,6 +31,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     python
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -42,7 +43,7 @@ values."
      emacs-lisp
      git
      markdown
-     ;; org
+     org
      (shell :variables
            shell-default-shell 'eshell
             close-window-with-terminal t
@@ -58,7 +59,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(company lsp-mode lsp-ui)
+   dotspacemacs-additional-packages '(company lsp-mode lsp-ui exwm)
    ;; A list of packages that cannot be updated.
 
    ;; A list of packages that will not be installed and loaded.
@@ -337,7 +338,8 @@ you should place your code here."
   ;;;; lsp::Rust
   (add-hook 'rust-mode-hook (
                              lambda ()
-                                   (setq lsp-rust-server 'rls)
+                                   (setq lsp-rust-server 'rust-analyzer)
+                                   ;; (setq lsp-rust-server 'rls)
                                    (eval (lsp))
                                    (eval (lsp-ui-doc-enable nil))
                                    (eval (lsp-ui-sideline-mode))
@@ -345,10 +347,6 @@ you should place your code here."
                                    (setq lsp-ui-sideline-show-diagnostics 't)
                                    )
   )
-  ;; (add-hook 'rust-mode-hook #'lsp)
-  ;; (add-hook 'rust-mode-hook #'lsp-ui-sideline-mode)
-  ;; (setq-default lsp-rust-server 'rls)
-  ;; (setq-default lsp-ui-sideline-mode 't)
 
   ;; key-mappings
   (define-key evil-normal-state-map (kbd "gb") 'evil-jump-backward)
@@ -359,14 +357,17 @@ you should place your code here."
   (setq-default org-startup-indented 't)
   (setq-default org-pretty-entities 't)
   (setq-default org-log-done 'time)
+  (setq org-agenda-files (file-expand-wildcards (concat "~/Dropbox/Local/Org/" "**/*.org")))
+  (setq-default org-startup-with-inline-images 't)
+  ;; (define-key org-mode-map (kbd "t") 'org-todo)
+  (evil-define-key 'normal org-mode-map (kbd "t") 'org-todo)
+  (org-reload) ;; seems to resolve an error with org-timer per https://emacs.stackexchange.com/questions/54005/problem-with-org-startup-indented
+  ;; eshell stuff
+  (spacemacs/set-leader-keys "ee" 'eshell)
 
-  ;;supposedly a hack to keep eshell from going to bottom
-  ;; yep: https://emacs.stackexchange.com/questions/28819/eshell-goes-to-the-bottom-of-the-page-after-executing-a-command
-  (add-hook 'eshell-mode-hook
-            (defun chunyang-eshell-mode-setup ()
-              (remove-hook 'eshell-output-filter-functions
-                           'eshell-postoutput-scroll-to-bottom)))
-
+  ;; use 'e' to enter files, enter to go to dirs
+  (require 'dired)
+  (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -378,11 +379,17 @@ you should place your code here."
  ;; If there is more than one, they won't work right.
  '(ansi-color-faces-vector
    [default default default italic underline success warning error])
+ '(eshell-output-filter-functions
+   (quote
+    (eshell-truncate-buffer eshell-truncate-buffer eshell-handle-control-codes eshell-handle-ansi-color eshell-watch-for-password-prompt eshell-postoutput-scroll-to-bottom)))
  '(evil-want-Y-yank-to-eol nil)
  '(helm-completion-style (quote emacs))
+ '(md4rd-subs-active
+   (quote
+    (emacs lisp+Common_Lisp prolog nba ultimate recipes vim spacemacs pics funny whatswrongwithyourdog)))
  '(package-selected-packages
    (quote
-    (vterm org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download htmlize gnuplot emacs-amazon-libs web-mode tagedit slim-mode scss-mode sass-mode pug-mode helm-css-scss haml-mode emmet-mode lsp-java treemacs pfuture posframe smeargle orgit magit-gitflow magit-popup helm-gitignore gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit git-commit with-editor transient lsp-ui ht dash-functional company-lsp company lsp-mode toml-mode racer pos-tip cargo rust-mode mmm-mode markdown-toc markdown-mode gh-md xterm-color shell-pop multi-term eshell-z eshell-prompt-extras esh-help ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired f evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
+    (xelb exwm yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode anaconda-mode pythonic treemacs-evil lsp-treemacs md4rd vterm org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download htmlize gnuplot emacs-amazon-libs web-mode tagedit slim-mode scss-mode sass-mode pug-mode helm-css-scss haml-mode emmet-mode lsp-java treemacs pfuture posframe smeargle orgit magit-gitflow magit-popup helm-gitignore gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit git-commit with-editor transient lsp-ui ht dash-functional company-lsp company lsp-mode toml-mode racer pos-tip cargo rust-mode mmm-mode markdown-toc markdown-mode gh-md xterm-color shell-pop multi-term eshell-z eshell-prompt-extras esh-help ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired f evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
