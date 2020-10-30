@@ -126,6 +126,10 @@ too hard about the alternative files right now
 	   (counsel-projectile-rg                . ivy-posframe-display-at-window-center)))
      (ivy-posframe-mode 1))
  #+END_SRC
+*** Avy
+#+BEGIN_SRC emacs-lisp
+(use-package avy)
+#+END_SRC
 *** Projectile
 **** Base projectile
  #+BEGIN_SRC emacs-lisp
@@ -238,10 +242,14 @@ This is where you can set up all the lsp stuff
  #+END_SRC
 **** Buffer Manipulation
  #+BEGIN_SRC emacs-lisp
-   (defvar buffer-map (make-sparse-keymap)
-     "Buffer manipulation")
-   (define-key buffer-map (kbd "d") 'kill-current-buffer)
-   (define-key buffer-map (kbd "b") 'ivy-switch-buffer)
+(defvar buffer-map (make-sparse-keymap)
+    "Buffer manipulation")
+(define-key buffer-map (kbd "d") 'kill-current-buffer)
+(define-key buffer-map (kbd "b") 'ivy-switch-buffer)
+(define-key buffer-map (kbd "s")
+  (lambda ()
+    (interactive)
+    (switch-to-buffer "*scratch*")))
  #+END_SRC
 **** Window Manipulation
  #+BEGIN_SRC emacs-lisp
@@ -377,7 +385,14 @@ CLOSED: [2020-10-27 Tue 22:39]
 CLOSED: [2020-10-27 Tue 22:38]
 Enable pretty mode, indents, etc
 *** TODO Eshell/terminals
-Get aliases set up, pretty prompt, maybe hook into dired/magit nicely
+Get aliases set up, pretty prompt, maybe hook into dired/magit nicely.
+**** TODO Eshell
+Eshell is going to have to be a passion project for the most part. Lots of customizations here are possible:
+***** TODO Make the prompt pretty
+***** TODO Define an aliases file in a discoverable place
+***** TODO ergonomic function to pipe output to scratch
+***** TODO ergonomic function to pipe background function to a named buffer
+e.g. ssh forwarding proxies
 *** TODO Advanced Ivy
 Better search features/shortcuts, really just scratching the surface here I think
 **** DONE Get +counsel-locate+ counsel-fzf up and running for intense filesystem file searches
