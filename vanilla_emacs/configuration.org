@@ -178,7 +178,7 @@ too hard about the alternative files right now
 		 (define-key evil-normal-state-local-map (kbd "c") 'neotree-create-node)
 		 (define-key evil-normal-state-local-map (kbd "d") 'neotree-delete-node))))
  #+END_SRC
-*** TODO Magit
+*** Magit
 **** Base Package
  Still much to do here. Need to evil-ify it, for one
 #+BEGIN_SRC emacs-lisp
@@ -406,5 +406,9 @@ IEdit perhaps? Look at alternatives
 avy maybe? Though it seems to struggle to perform with lsp
 *** TODO TRAMP
 Need to find an ergonomic way to cycle through known connections without typing out the whole ssh syntax
-*** TODO Magit
+*** TODO Autocompletion
+Ideally, integrated well with ivy. Probably company mode
+*** TODO Opening links
+*** DONE Magit
+CLOSED: [2020-10-28 Wed 23:34]
 Like, any of it
