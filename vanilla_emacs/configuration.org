@@ -7,6 +7,7 @@ I like to have the emacs directory set relative to the .emacs file, and, corresp
 (setq user-emacs-directory
       (file-truename (concat default-directory ".emacs.d/")))
 #+END_SRC
+
 *** Editing config
 Work on the below once you've gone live, so you don't have to think
 too hard about the alternative files right now
@@ -20,6 +21,7 @@ too hard about the alternative files right now
 (tooltip-mode -1)
 (menu-bar-mode -1)
 #+END_SRC
+
 ** Packages
 *** Use-package
 **** Initialize package with correct archives
@@ -33,6 +35,7 @@ too hard about the alternative files right now
  (unless package-archive-contents
    (package-refresh-contents))
  #+END_SRC
+
 **** Install use-package
  Everything after this should use use-package for management
  #+BEGIN_SRC emacs-lisp
@@ -42,6 +45,7 @@ too hard about the alternative files right now
  (require 'use-package)
  (setq use-package-always-ensure t)
  #+END_SRC
+
 *** Theming
 **** Poet
  #+BEGIN_SRC emacs-lisp
@@ -52,6 +56,7 @@ too hard about the alternative files right now
 	      (lambda ()
 	       (variable-pitch-mode 1))))
  #+END_SRC
+
 **** Fonts
 ***** all-the-icons
  Using font-family-list to download ATI only once
@@ -61,6 +66,17 @@ too hard about the alternative files right now
      (unless (member "all-the-icons" (font-family-list))
        (all-the-icons-install-fonts t)))
  #+END_SRC
+
+*** Company
+I can use the better 'after-init-hook when this loaded from my actual
+.emacs file. While I'm running in portable mode, however,
+`emacs-startup-hook is the best I'm going to be able to do
+#+BEGIN_SRC emacs-lisp
+(use-package company
+  :init
+  (add-hook 'emacs-startup-hook #'global-company-mode))
+#+END_SRC
+
 *** Evil
 **** Basic package
  #+BEGIN_SRC emacs-lisp
@@ -71,12 +87,14 @@ too hard about the alternative files right now
      (setq evil-shift-width 2) ;; lets be honest I prefer it this way
      (evil-mode 1))
  #+END_SRC
+
 **** evil-escape
  #+BEGIN_SRC emacs-lisp
    (use-package evil-escape
      :config
      (evil-escape-mode))
  #+END_SRC
+
 **** evil-nerd-commenter
  evil-nerd-commenter does a few things that comment-line and comment-dwim don't (or at least not without more work):
  - It handles regions and lines interchangeably without issue
@@ -85,6 +103,7 @@ too hard about the alternative files right now
  #+BEGIN_SRC emacs-lisp
    (use-package evil-nerd-commenter)
  #+END_SRC
+
 *** Ivy & such
 **** Base Ivy
  #+BEGIN_SRC emacs-lisp
@@ -96,10 +115,12 @@ too hard about the alternative files right now
      (setq enable-recursive-minibuffers t)
      (setq ivy-use-selectable-prompt t))
  #+END_SRC
+
 **** Counsel
  #+BEGIN_SRC emacs-lisp
    (use-package counsel)
  #+END_SRC
+
 **** Posframe
  Creates a floating frame for ivy-related searches
  #+BEGIN_SRC emacs-lisp
@@ -126,10 +147,27 @@ too hard about the alternative files right now
 	   (counsel-projectile-rg                . ivy-posframe-display-at-window-center)))
      (ivy-posframe-mode 1))
  #+END_SRC
+
 *** Avy
 #+BEGIN_SRC emacs-lisp
 (use-package avy)
 #+END_SRC
+
+*** Ace
+Link & Window I think
+**** ace-window
+#+BEGIN_SRC emacs-lisp
+(use-package ace-window
+  :config
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+#+END_SRC
+
+**** link-hint
+ace-link is too complicated for me
+#+BEGIN_SRC emacs-lisp
+(use-package link-hint)
+#+END_SRC
+
 *** Projectile
 **** Base projectile
  #+BEGIN_SRC emacs-lisp
@@ -139,6 +177,7 @@ too hard about the alternative files right now
      (setq projectile-completion-system 'ivy)
      (projectile-mode +1))
  #+END_SRC
+
 **** Counsel projectile
  So that I can use posframe here as well
  #+BEGIN_SRC emacs-lisp
@@ -146,6 +185,7 @@ too hard about the alternative files right now
      :config
      (counsel-projectile-mode))
  #+END_SRC
+
 *** Neotree
  #+BEGIN_SRC emacs-lisp
    (use-package neotree
@@ -178,6 +218,7 @@ too hard about the alternative files right now
 		 (define-key evil-normal-state-local-map (kbd "c") 'neotree-create-node)
 		 (define-key evil-normal-state-local-map (kbd "d") 'neotree-delete-node))))
  #+END_SRC
+
 *** Magit
 **** Base Package
  Still much to do here. Need to evil-ify it, for one
@@ -187,6 +228,7 @@ too hard about the alternative files right now
   (setq-default magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1))
 (use-package evil-magit)
 #+END_SRC
+
 **** Magit Customizations
 I don't like the control-oriented confirm/cancel commands when working
 with commit messages. Stealing the key-mapping from spacemacs here
@@ -201,6 +243,7 @@ because I don't use the comma in my day-to-day editing
 	  (lambda ()
 	    (define-key evil-motion-state-local-map (kbd ",") with-editor-custom-map)))
 #+END_SRC
+
 *** TODO Major-modes
  Need to fill this out
  - Major modes that need work:
@@ -230,6 +273,7 @@ This is where you can set up all the lsp stuff
 			  lambda ()
 				 (setq evil-auto-indent nil)))
 #+END_SRC
+
 ** Key Maps
 *** Sub-maps
 **** Help Functions
@@ -240,6 +284,7 @@ This is where you can set up all the lsp stuff
    (define-key help-map (kbd "v") 'counsel-describe-variable)
    (define-key help-map (kbd "k") 'describe-key)
  #+END_SRC
+
 **** Buffer Manipulation
  #+BEGIN_SRC emacs-lisp
 (defvar buffer-map (make-sparse-keymap)
@@ -251,16 +296,19 @@ This is where you can set up all the lsp stuff
     (interactive)
     (switch-to-buffer "*scratch*")))
  #+END_SRC
+
 **** Window Manipulation
  #+BEGIN_SRC emacs-lisp
-   (defvar window-map (make-sparse-keymap)
-     "Window manipulation")
-   (define-key window-map (kbd "k") 'windmove-up)
-   (define-key window-map (kbd "j") 'windmove-down)
-   (define-key window-map (kbd "h") 'windmove-left)
-   (define-key window-map (kbd "l") 'windmove-right)
-   (define-key window-map (kbd "d") 'delete-window)
+(defvar window-map (make-sparse-keymap)
+    "Window manipulation")
+(define-key window-map (kbd "k") 'windmove-up)
+(define-key window-map (kbd "j") 'windmove-down)
+(define-key window-map (kbd "h") 'windmove-left)
+(define-key window-map (kbd "l") 'windmove-right)
+(define-key window-map (kbd "d") 'delete-window)
+(define-key window-map (kbd "D") 'ace-delete-window)
  #+END_SRC
+
 **** File Manipulation
  #+BEGIN_SRC emacs-lisp
    (defvar file-map (make-sparse-keymap)
@@ -268,6 +316,7 @@ This is where you can set up all the lsp stuff
    (define-key file-map (kbd "s") 'save-buffer)
    (define-key file-map (kbd "f") 'counsel-find-file)
  #+END_SRC
+
 **** Dired Maps
 ***** Dired Activation/Control
  #+BEGIN_SRC emacs-lisp
@@ -282,6 +331,7 @@ This is where you can set up all the lsp stuff
        (interactive)
        (dired (projectile-project-root))))
  #+END_SRC
+
 ***** Dired Mode
  Simple function to retreat out of a dired subdir
  #+BEGIN_SRC emacs-lisp
@@ -319,6 +369,7 @@ This is where you can set up all the lsp stuff
    (define-key dired-mode-map (kbd "TAB") 'dired-maybe-insert-subdir)
    (define-key dired-mode-map (kbd "$") 'evil-end-of-line)
  #+END_SRC
+
 **** Search
 Note: Probably best to write this stuff in init.el, and move over afterwards
 Intense filesystem/symbol searches here.
@@ -330,6 +381,7 @@ Intense filesystem/symbol searches here.
 (define-key search-map (kbd "f") 'counsel-fzf)
 (define-key search-map (kbd "s") 'counsel-ag)
 #+END_SRC
+
 **** Project Manipulation
 Extending/customizing the projectile command map as needed here.Using
 ag for now because it's a little more ubiquitous, but I can move over
@@ -347,6 +399,26 @@ there error will happen everytime I reload config
     (interactive)
     (counsel-ag nil (projectile-project-root))))
 #+END_SRC
+
+**** Jump Map
+Jumping around buffers
+#+BEGIN_SRC emacs-lisp
+(defvar jump-map (make-sparse-keymap)
+  "Keys for jumping around places, primarily with avy")
+
+(define-key jump-map (kbd "l") 'avy-goto-line)
+#+END_SRC
+
+**** Link Map
+Opening & copying links
+#+BEGIN_SRC emacs-lisp
+(defvar link-map (make-sparse-keymap)
+  "Utilities for opening links")
+
+(define-key link-map (kbd "o") 'link-hint-open-link)
+(define-key link-map (kbd "c") 'link-hint-copy-link)
+#+END_SRC
+
 *** Top-level-map
 It needs to happen after submaps are defined
 #+BEGIN_SRC emacs-lisp
@@ -364,6 +436,8 @@ It needs to happen after submaps are defined
 (define-key top-level-map (kbd "h") help-map)
 (define-key top-level-map (kbd "d") dired-activate-map)
 (define-key top-level-map (kbd "s") search-map)
+(define-key top-level-map (kbd "j") jump-map)
+(define-key top-level-map (kbd "x") link-map)
 ;; Projectile has its own submap
 (define-key top-level-map (kbd "p") projectile-command-map)
 
@@ -375,12 +449,14 @@ It needs to happen after submaps are defined
 ;; same with magit
 (define-key magit-status-mode-map (kbd "SPC") top-level-map)
 #+END_SRC
+
 ** Further work needed
 *** TODO Organize this file a little better
 **** DONE Load packages in a single section
 CLOSED: [2020-10-27 Tue 22:39]
 **** TODO Organize the remainder by domain
-**** TODO Finally, key maps at the end
+**** DONE Finally, key maps at the end
+CLOSED: [2020-10-29 Thu 21:13]
 *** DONE Org-mode
 CLOSED: [2020-10-27 Tue 22:38]
 Enable pretty mode, indents, etc
@@ -402,13 +478,17 @@ CLOSED: [2020-10-28 Wed 21:55]
 **** TODO Move to ivy-regex-ignore-orer for some searches (functions/variables/M-x, probably)
 *** TODO Multi-cursor editor
 IEdit perhaps? Look at alternatives
-*** TODO Line jump/buffer nav
+*** DONE Line jump/buffer nav
+CLOSED: [2020-10-29 Thu 17:49]
 avy maybe? Though it seems to struggle to perform with lsp
+Mostly just jump-line, but could potentially do more char navigation with SPC-j-c
 *** TODO TRAMP
 Need to find an ergonomic way to cycle through known connections without typing out the whole ssh syntax
-*** TODO Autocompletion
+*** DONE Autocompletion
+CLOSED: [2020-10-29 Thu 20:26]
 Ideally, integrated well with ivy. Probably company mode
-*** TODO Opening links
+*** DONE Opening links
+CLOSED: [2020-10-29 Thu 21:13]
 *** DONE Magit
 CLOSED: [2020-10-28 Wed 23:34]
-Like, any of it
+Like, any of it.
