@@ -20,6 +20,7 @@ too hard about the alternative files right now
 (tool-bar-mode -1)
 (tooltip-mode -1)
 (menu-bar-mode -1)
+(electric-pair-mode +1)
 #+END_SRC
 
 ** Packages
@@ -69,6 +70,7 @@ too hard about the alternative files right now
  #+END_SRC
 
 *** Company
+**** Base-company
 I can use the better 'after-init-hook when this loaded from my actual
 .emacs file. While I'm running in portable mode, however,
 `emacs-startup-hook is the best I'm going to be able to do
@@ -294,6 +296,7 @@ Assumes rust-analyzer installed
 (add-hook 'rust-mode-hook (
                             lambda ()
                                 (setq lsp-rust-server 'rust-analyzer)
+                                (setq rust-indent-offset 2)
                                 ;; (setq lsp-rust-server 'rls)
                                 (eval (lsp))
                                 (eval (lsp-ui-doc-enable nil))
@@ -305,6 +308,28 @@ Assumes rust-analyzer installed
 #+END_SRC
 
 *** TODO Typescript/javascript
+Using https://github.com/sourcegraph/javascript-typescript-langserver for now, which is deprecated. Should switch to Theia
+Actually it's not clear, this may be using theide. Need to research further
+Tide might be the best answer actually: https://github.com/ananthakumaran/tide
+**** typescript
+#+BEGIN_SRC emacs-lisp
+(add-hook 'typescript-mode-hook
+	  (lambda ()
+	    (setq lsp-clients-typescript-server-args '("--stdio" "--tsserver-log-file=/Users/kybarton/ts-ls-log.txt"))
+	    (setq typescript-indent-level 2)
+	    (eval (lsp))
+	    (eval (lsp-ui-doc-enable nil))))
+#+END_SRC
+
+**** javascript
+#+BEGIN_SRC emacs-lisp
+(add-hook 'js-mode-hook
+	  (lambda ()
+	    (setq lsp-clients-typescript-server-args '("--stdio" "--tsserver-log-file=/Users/kybarton/ts-ls-log.txt"))
+	    (eval (lsp))
+	    (eval (lsp-ui-doc-enable nil))))
+#+END_SRC
+
 *** TODO Java
 *** TODO Python
 *** TODO Ruby
