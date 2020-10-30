@@ -26,14 +26,15 @@ too hard about the alternative files right now
 *** Use-package
 **** Initialize package with correct archives
  #+BEGIN_SRC emacs-lisp
- (require 'package)
- (setq package-archives `(("gnu" . "https://elpa.gnu.org/packages/")
-			  ("melpa" . "https://melpa.org/packages/")
-			  ("org" . "https://orgmode.org/elpa/")))
+(require 'package)
+(setq package-archives `(("gnu" . "https://elpa.gnu.org/packages/")
+                        ("melpa" . "https://melpa.org/packages/")
+                        ("melpa-stable" . "https://stable.melpa.org/packages/")
+                        ("org" . "https://orgmode.org/elpa/")))
 
- (package-initialize)
- (unless package-archive-contents
-   (package-refresh-contents))
+(package-initialize)
+(unless package-archive-contents
+(package-refresh-contents))
  #+END_SRC
 
 **** Install use-package
@@ -244,7 +245,7 @@ because I don't use the comma in my day-to-day editing
 	    (define-key evil-motion-state-local-map (kbd ",") with-editor-custom-map)))
 #+END_SRC
 
-*** TODO Major-modes
+*** TODO Language Support
  Need to fill this out
  - Major modes that need work:
      - Python
@@ -253,13 +254,61 @@ because I don't use the comma in my day-to-day editing
      - Java
      - C#
      - Ruby
-**** rust
+**** DONE General
+CLOSED: [2020-10-29 Thu 21:25]
+#+BEGIN_SRC emacs-lisp
+(use-package flycheck)
+(use-package lsp-mode)
+(use-package lsp-ui)
+#+END_SRC
+
+**** DONE rust
+CLOSED: [2020-10-29 Thu 22:45]
  #+BEGIN_SRC emacs-lisp
    (use-package rust-mode)
  #+END_SRC
 
+**** TODO typescript/javascript
+**** TODO java
+**** TODO python
+**** TODO ruby
+**** TODO c#
+
 ** TODO Code Editing
 This is where you can set up all the lsp stuff
+*** DONE General
+CLOSED: [2020-10-29 Thu 21:52]
+Need to configure a basic symbol jump handler for "gd"
+-- actually "gd" seems to work pretty seamlessly. Would be good to understand it better at some point
+#+BEGIN_SRC emacs-lisp
+(evil-define-key 'normal 'global (kbd "gb") 'evil-jump-backward)
+(evil-define-key 'normal lsp-mode-map (kbd "gr") 'lsp-find-references)
+(evil-define-key 'normal lsp-mode-map (kbd "rr") 'lsp-rename)
+#+END_SRC
+
+*** DONE Rust
+CLOSED: [2020-10-29 Thu 21:51]
+Assumes rust-analyzer installed
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'rust-mode-hook (
+                            lambda ()
+                                (setq lsp-rust-server 'rust-analyzer)
+                                ;; (setq lsp-rust-server 'rls)
+                                (eval (lsp))
+                                (eval (lsp-ui-doc-enable nil))
+                                (eval (lsp-ui-sideline-mode))
+                                (setq lsp-ui-sideline-show-hover 't)
+                                (setq lsp-ui-sideline-show-diagnostics 't)
+                                )
+)
+#+END_SRC
+
+*** TODO Typescript/javascript
+*** TODO Java
+*** TODO Python
+*** TODO Ruby
+*** TODO C#
 ** Org
 *THISISBOLD* /this italics/ +this strikethrough+ _this underline_
 #+BEGIN_SRC emacs-lisp
