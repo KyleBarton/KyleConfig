@@ -286,6 +286,7 @@ This is where you can set up all the lsp stuff
 CLOSED: [2020-10-29 Thu 21:52]
 Need to configure a basic symbol jump handler for "gd"
 -- actually "gd" seems to work pretty seamlessly. Would be good to understand it better at some point
+-- gr and rr are problems because they get in the way of evil's global normal-state map. I need to bind them to a custom function, and make a context-dependent call at that point I think
 #+BEGIN_SRC emacs-lisp
 (evil-define-key 'normal 'global (kbd "gb") 'evil-jump-backward)
 (evil-define-key 'normal lsp-mode-map (kbd "gr") 'lsp-find-references)
