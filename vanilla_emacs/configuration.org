@@ -271,6 +271,10 @@ CLOSED: [2020-10-29 Thu 22:45]
  #+END_SRC
 
 **** TODO typescript/javascript
+***** typescript-mode
+#+BEGIN_SRC emacs-lisp
+(use-package typescript-mode)
+#+END_SRC
 **** TODO java
 **** TODO python
 **** TODO ruby
@@ -566,3 +570,5 @@ CLOSED: [2020-10-29 Thu 21:13]
 *** DONE Magit
 CLOSED: [2020-10-28 Wed 23:34]
 Like, any of it.
+*** TODO Window resizing
+Not sure how to do this
