@@ -110,18 +110,26 @@ I can use the better 'after-init-hook when this loaded from my actual
 *** Ivy & such
 **** Base Ivy
  #+BEGIN_SRC emacs-lisp
-   (use-package ivy
-     :config
-     (ivy-mode)
-     (setq ivy-use-virtual-buffers t)
-     (setq ivy-count-format "(%d/%d) ")
-     (setq enable-recursive-minibuffers t)
-     (setq ivy-use-selectable-prompt t))
+(use-package ivy
+  :config
+  (ivy-mode)
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-count-format "(%d/%d) ")
+  (setq enable-recursive-minibuffers t)
+  (setq ivy-use-selectable-prompt t))
  #+END_SRC
 
 **** Counsel
  #+BEGIN_SRC emacs-lisp
-   (use-package counsel)
+(use-package counsel
+  :config
+  (setq ivy-re-builders-alist
+    '((counsel-describe-function . ivy--regex-ignore-order)
+      (counsel-describe-variable . ivy--regex-ignore-order)
+      (counsel-M-x . ivy--regex-ignore-order)
+      (t . ivy--regex-plus)))
+  (setcdr (assoc 'counsel-M-x ivy-initial-inputs-alist) "")
+  (setcdr (assoc 'counsel-describe-symbol ivy-initial-inputs-alist) ""))
  #+END_SRC
 
 **** Posframe
@@ -282,16 +290,13 @@ CLOSED: [2020-10-29 Thu 22:45]
 
 ** TODO Code Editing
 This is where you can set up all the lsp stuff
-*** DONE General
-CLOSED: [2020-10-29 Thu 21:52]
-Need to configure a basic symbol jump handler for "gd"
--- actually "gd" seems to work pretty seamlessly. Would be good to understand it better at some point
--- gr and rr are problems because they get in the way of evil's global normal-state map. I need to bind them to a custom function, and make a context-dependent call at that point I think
-#+BEGIN_SRC emacs-lisp
-(evil-define-key 'normal 'global (kbd "gb") 'evil-jump-backward)
-(evil-define-key 'normal lsp-mode-map (kbd "gr") 'lsp-find-references)
-(evil-define-key 'normal lsp-mode-map (kbd "rr") 'lsp-rename)
-#+END_SRC
+*** TODO General
+Here might be a good place to define the generic functions discussed
+in the [[Language Map]] section. For now, see that defined submap for
+generic keybindings.
+
+Also here is where I should define some common preferences, such as
+'lsp-ui-sideline-mode and disabling 'lsp-ui-doc-mode
 
 *** DONE Rust
 CLOSED: [2020-10-29 Thu 21:51]
@@ -312,10 +317,15 @@ Assumes rust-analyzer installed
 )
 #+END_SRC
 
-*** TODO Typescript/javascript
+*** DONE Typescript/javascript
+CLOSED: [2020-10-31 Sat 12:21]
 Using https://github.com/sourcegraph/javascript-typescript-langserver for now, which is deprecated. Should switch to Theia
 Actually it's not clear, this may be using theide. Need to research further
 Tide might be the best answer actually: https://github.com/ananthakumaran/tide
+
+After installing on a fresh machine it appears that you get walked
+through the install. NPM is a dependency but that's all. Could try
+tide at some point but lsp ui is so nice
 **** typescript
 #+BEGIN_SRC emacs-lisp
 (add-hook 'typescript-mode-hook
@@ -336,6 +346,9 @@ Tide might be the best answer actually: https://github.com/ananthakumaran/tide
 #+END_SRC
 
 *** TODO Java
+Be sure go to through
+https://emacs-lsp.github.io/lsp-mode/page/performance/, and also to
+check on native JSON parsing support
 *** TODO Python
 *** TODO Ruby
 *** TODO C#
@@ -498,6 +511,24 @@ Opening & copying links
 (define-key link-map (kbd "c") 'link-hint-copy-link)
 #+END_SRC
 
+**** Language Map
+Submap for lsp-related functions primarily, but should hold any
+sementic "language"-related manipulations.
+
+One nice improvement would
+be to define generic functions, e.g. 'rename-impl, which would wrap
+the dependency on lsp and define backup functions for situations where
+lsp-mode is not active
+#+BEGIN_SRC emacs-lisp
+(defvar language-map (make-sparse-keymap)
+  "Mappings for various language/lsp bindings and manipulation")
+
+(define-key language-map (kbd "rr") 'lsp-rename)
+(define-key language-map (kbd "gr") 'lsp-find-references)
+(define-key language-map (kbd "aa") 'lsp-execute-code-action)
+(define-key language-map (kbd "fp") 'fill-paragraph)
+#+END_SRC
+
 *** Top-level-map
 It needs to happen after submaps are defined
 #+BEGIN_SRC emacs-lisp
@@ -517,6 +548,7 @@ It needs to happen after submaps are defined
 (define-key top-level-map (kbd "s") search-map)
 (define-key top-level-map (kbd "j") jump-map)
 (define-key top-level-map (kbd "x") link-map)
+(define-key top-level-map (kbd "l") language-map)
 ;; Projectile has its own submap
 (define-key top-level-map (kbd "p") projectile-command-map)
 
@@ -548,13 +580,15 @@ Eshell is going to have to be a passion project for the most part. Lots of custo
 ***** TODO ergonomic function to pipe output to scratch
 ***** TODO ergonomic function to pipe background function to a named buffer
 e.g. ssh forwarding proxies
-*** TODO Advanced Ivy
+*** DONE Advanced Ivy
+CLOSED: [2020-10-31 Sat 13:06]
 Better search features/shortcuts, really just scratching the surface here I think
 **** DONE Get +counsel-locate+ counsel-fzf up and running for intense filesystem file searches
 CLOSED: [2020-10-28 Wed 21:55]
 **** DONE Get counsel-ag up for both large filesystem symbol searches, and project scoping
 CLOSED: [2020-10-28 Wed 21:55]
-**** TODO Move to ivy-regex-ignore-orer for some searches (functions/variables/M-x, probably)
+**** DONE Move to ivy-regex-ignore-orer for some searches (functions/variables/M-x, probably)
+CLOSED: [2020-10-31 Sat 13:06]
 *** TODO Multi-cursor editor
 IEdit perhaps? Look at alternatives
 *** DONE Line jump/buffer nav
@@ -573,3 +607,5 @@ CLOSED: [2020-10-28 Wed 23:34]
 Like, any of it.
 *** TODO Window resizing
 Not sure how to do this
+*** TODO Upgrade to emacs 27
+Native JSON parsing support, among other things. Expect +a large+ some performance improvement
