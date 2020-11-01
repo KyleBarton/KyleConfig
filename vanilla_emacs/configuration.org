@@ -5,15 +5,28 @@ Stuff related to .emacs, .emacs.d, and generally making config work easier
 I like to have the emacs directory set relative to the .emacs file, and, correspondingly, this file:
 #+BEGIN_SRC emacs-lisp
 (setq user-emacs-directory
-      (file-truename (concat default-directory ".emacs.d/")))
+  (file-truename (concat default-directory ".emacs.d/")))
 #+END_SRC
 
 *** Editing config
 Work on the below once you've gone live, so you don't have to think
 too hard about the alternative files right now
 **** TODO Interactive function that takes me to configuration.org
+This probably belongs in file map
 **** TODO Interactive function that reloads config
-** Basic visual preferences
+Actually, an "eval-map" would probably be useful as well:
+- Eval buffer
+- Eval region
+- Eval expression (honestly just use eshell)
+- Eval .emacs
+This could all easily exist in "SPC-e" (SPC-e-e for eshell kind of fits)
+** Core Emacs Preferences
+*** Scrolling/Buffer control
+#+BEGIN_SRC emacs-lisp
+(setq-default scroll-conservatively 5)
+#+END_SRC
+
+*** Basic visual preferences
 #+BEGIN_SRC emacs-lisp
 (setq inhibit-startup-message t)
 (scroll-bar-mode -1)
@@ -83,12 +96,13 @@ I can use the better 'after-init-hook when this loaded from my actual
 *** Evil
 **** Basic package
  #+BEGIN_SRC emacs-lisp
-   (use-package evil
-     :init
-     (setq evil-want-C-u-scroll t)
-     :config
-     (setq evil-shift-width 2) ;; lets be honest I prefer it this way
-     (evil-mode 1))
+(use-package evil
+  :init
+  (setq-default evil-want-C-u-scroll t)
+  :config
+  (setq-default evil-shift-width 2) ;; lets be honest I prefer it this way
+  (setq-default evil-scroll-count 10)
+  (evil-mode 1))
  #+END_SRC
 
 **** evil-escape
@@ -255,6 +269,11 @@ because I don't use the comma in my day-to-day editing
 	    (define-key evil-motion-state-local-map (kbd ",") with-editor-custom-map)))
 #+END_SRC
 
+*** IEdit
+#+BEGIN_SRC
+(use-package iedit)
+#+END_SRC
+
 *** TODO Language Support
  Need to fill this out
  - Major modes that need work:
@@ -297,6 +316,14 @@ generic keybindings.
 
 Also here is where I should define some common preferences, such as
 'lsp-ui-sideline-mode and disabling 'lsp-ui-doc-mode
+
+"Return" sends cursor to the selected reference, kills the xref buffer:
+#+BEGIN_SRC emacs-lisp
+(evil-define-key 'motion xref--xref-buffer-mode-map (kbd "RET")
+  (lambda ()
+    (interactive)
+    (xref-goto-xref 't)))
+#+END_SRC
 
 *** DONE Rust
 CLOSED: [2020-10-29 Thu 21:51]
@@ -392,7 +419,7 @@ check on native JSON parsing support
 **** Window Manipulation
  #+BEGIN_SRC emacs-lisp
 (defvar window-map (make-sparse-keymap)
-    "Window manipulation")
+  "Window manipulation")
 (define-key window-map (kbd "k") 'windmove-up)
 (define-key window-map (kbd "j") 'windmove-down)
 (define-key window-map (kbd "h") 'windmove-left)
@@ -403,10 +430,10 @@ check on native JSON parsing support
 
 **** File Manipulation
  #+BEGIN_SRC emacs-lisp
-   (defvar file-map (make-sparse-keymap)
-     "File manipulation")
-   (define-key file-map (kbd "s") 'save-buffer)
-   (define-key file-map (kbd "f") 'counsel-find-file)
+(defvar file-map (make-sparse-keymap)
+  "File manipulation")
+(define-key file-map (kbd "s") 'save-buffer)
+(define-key file-map (kbd "f") 'counsel-find-file)
  #+END_SRC
 
 **** Dired Maps
@@ -472,6 +499,7 @@ Intense filesystem/symbol searches here.
   "Search utilities")
 (define-key search-map (kbd "f") 'counsel-fzf)
 (define-key search-map (kbd "s") 'counsel-ag)
+(define-key search-map (kbd "e") 'iedit-mode)
 #+END_SRC
 
 **** Project Manipulation
@@ -559,6 +587,8 @@ It needs to happen after submaps are defined
 (define-key dired-mode-map (kbd "SPC") top-level-map)
 ;; same with magit
 (define-key magit-status-mode-map (kbd "SPC") top-level-map)
+;; This jump-back command gels nicely with "gd"
+(evil-define-key 'motion 'global (kbd "gb") 'evil-jump-backward)
 #+END_SRC
 
 ** Further work needed
@@ -589,7 +619,8 @@ CLOSED: [2020-10-28 Wed 21:55]
 CLOSED: [2020-10-28 Wed 21:55]
 **** DONE Move to ivy-regex-ignore-orer for some searches (functions/variables/M-x, probably)
 CLOSED: [2020-10-31 Sat 13:06]
-*** TODO Multi-cursor editor
+*** DONE Multi-cursor editor
+CLOSED: [2020-11-01 Sun 09:43]
 IEdit perhaps? Look at alternatives
 *** DONE Line jump/buffer nav
 CLOSED: [2020-10-29 Thu 17:49]
@@ -607,5 +638,6 @@ CLOSED: [2020-10-28 Wed 23:34]
 Like, any of it.
 *** TODO Window resizing
 Not sure how to do this
-*** TODO Upgrade to emacs 27
+*** DONE Upgrade to emacs 27
+CLOSED: [2020-11-01 Sun 09:27]
 Native JSON parsing support, among other things. Expect +a large+ some performance improvement
