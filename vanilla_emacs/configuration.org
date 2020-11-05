@@ -213,35 +213,36 @@ ace-link is too complicated for me
 
 *** Neotree
  #+BEGIN_SRC emacs-lisp
-   (use-package neotree
-     :init
-     (setq neo-show-hidden-files t)
-     ;; confirm to delete files, but not to create them
-     (setq neo-confirm-create-file 'off-p)
-     ;; Use all-the-icons if you're not on a terminal
-     (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
-     :config
-     (defun neotree-projectile ()
-     "Open NeoTree using the project root, focus on current buffer file.
-   Borrowed from a config here: https://www.emacswiki.org/emacs/NeoTree.
-   If neotree is open, closes it."
-       (interactive)
-       (if (neo-global--window-exists-p)
-	   (neotree-toggle)
-	   (let ((project-dir (projectile-project-root))
-		 (file-name (buffer-file-name)))
-	     (if project-dir
-		 (progn
-		   (neotree-dir project-dir)
-		   (neotree-find file-name))
-	       (message "Could not find git project root.")))))
+(use-package neotree
+  :init
+  (setq neo-show-hidden-files t)
+  ;; confirm to delete files, but not to create them
+  (setq neo-confirm-create-file 'off-p)
+  ;; Use all-the-icons if you're not on a terminal
+  (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+  :config
+  (defun neotree-projectile ()
+  "Open NeoTree using the project root, focus on current buffer file.
+Borrowed from a config here: https://www.emacswiki.org/emacs/NeoTree.
+If neotree is open, closes it."
+    (interactive)
+    (if (neo-global--window-exists-p)
+        (neotree-toggle)
+        (let ((project-dir (projectile-project-root))
+              (file-name (buffer-file-name)))
+          (if project-dir
+              (progn
+                (neotree-dir project-dir)
+                (neotree-find file-name))
+            (message "Could not find git project root.")))))
 
-     (add-hook 'neotree-mode-hook
-	       (lambda ()
-		 (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
-		 (define-key evil-normal-state-local-map (kbd "gr") 'neotree-refresh)
-		 (define-key evil-normal-state-local-map (kbd "c") 'neotree-create-node)
-		 (define-key evil-normal-state-local-map (kbd "d") 'neotree-delete-node))))
+  (add-hook 'neotree-mode-hook
+            (lambda ()
+              (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
+              (define-key evil-normal-state-local-map (kbd "TAB") 'neotree-stretch-toggle)
+              (define-key evil-normal-state-local-map (kbd "gr") 'neotree-refresh)
+              (define-key evil-normal-state-local-map (kbd "c") 'neotree-create-node)
+              (define-key evil-normal-state-local-map (kbd "d") 'neotree-delete-node))))
  #+END_SRC
 
 *** Magit
@@ -270,7 +271,7 @@ because I don't use the comma in my day-to-day editing
 #+END_SRC
 
 *** IEdit
-#+BEGIN_SRC
+#+BEGIN_SRC emacs-lisp
 (use-package iedit)
 #+END_SRC
 
@@ -325,6 +326,14 @@ Also here is where I should define some common preferences, such as
     (xref-goto-xref 't)))
 #+END_SRC
 
+Make sure that  garbage collection and process reading are up to modern sizes
+#+BEGIN_SRC emacs-lisp
+;; 100mb
+(setq gc-cons-threshold 100000000)
+;; 1mb
+(setq read-process-output-max (* 1024 1024))
+#+END_SRC
+
 *** DONE Rust
 CLOSED: [2020-10-29 Thu 21:51]
 Assumes rust-analyzer installed
@@ -372,10 +381,30 @@ tide at some point but lsp ui is so nice
 	    (eval (lsp-ui-doc-enable nil))))
 #+END_SRC
 
-*** TODO Java
-Be sure go to through
-https://emacs-lsp.github.io/lsp-mode/page/performance/, and also to
-check on native JSON parsing support
+*** DONE Java
+CLOSED: [2020-11-04 Wed 16:51]
+*note* this is really only going to work on emacs 27+. You need native
+ json support to handle a java project of any significant size
+#+BEGIN_SRC emacs-lisp
+(use-package lsp-java
+  :config
+  (setq lsp-enable-on-type-formatting nil)
+  (setq lsp-java-format-on-type-enabled nil)
+  (setq lsp-java-vmargs
+	(list
+	 "-noverify"
+	 "-Xmx1G"
+	 "-XX:+UseG1GC"
+	 "-XX:+UseStringDeduplication"
+	 "-javaagent:/Users/kybarton/.lombok/lombok.jar"))) ;; tentatively the default location for lombok I guess
+
+(add-hook 'java-mode-hook
+	  (lambda ()
+	    (eval (lsp))
+	    (eval (lsp-ui-doc-enable-nil))
+	    (setq lsp-ui-sideline-show-hover 't)))
+#+END_SRC
+**** TODO make the location of lombok more generic
 *** TODO Python
 *** TODO Ruby
 *** TODO C#
@@ -426,6 +455,7 @@ check on native JSON parsing support
 (define-key window-map (kbd "l") 'windmove-right)
 (define-key window-map (kbd "d") 'delete-window)
 (define-key window-map (kbd "D") 'ace-delete-window)
+(define-key window-map (kbd "w") 'ace-select-window)
  #+END_SRC
 
 **** File Manipulation
