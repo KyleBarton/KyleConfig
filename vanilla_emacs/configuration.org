@@ -423,6 +423,15 @@ CLOSED: [2020-11-04 Wed 16:51]
 #+END_SRC
 
 ** Key Maps
+*** Misc
+Place for me to append key-mappings for various minor modes, which
+don't necessarily have a good organization right now
+**** ansi-term
+Enable some pasting
+#+BEGIN_SRC emacs-lisp
+(evil-define-key 'normal term-raw-map (kbd "p") 'term-paste)
+#+END_SRC
+
 *** Sub-maps
 **** Help Functions
  #+BEGIN_SRC emacs-lisp
