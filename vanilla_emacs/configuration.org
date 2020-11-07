@@ -173,6 +173,15 @@ I can use the better 'after-init-hook when this loaded from my actual
      (ivy-posframe-mode 1))
  #+END_SRC
 
+**** smex
+Give me some command history!
+#+BEGIN_SRC emacs-lisp
+(use-package smex
+  :config
+  (unless (boundp smex-initialized-p)
+    (smex-initialize)))
+#+END_SRC
+
 *** Avy
 #+BEGIN_SRC emacs-lisp
 (use-package avy)
