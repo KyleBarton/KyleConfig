@@ -284,6 +284,15 @@ because I don't use the comma in my day-to-day editing
 (use-package iedit)
 #+END_SRC
 
+*** Dired-hacks
+**** dired-subtree
+Enables a "tree-like" dired navigation
+#+BEGIN_SRC emacs-lisp
+(use-package dired-subtree
+  :config
+  (setq-default dired-subtree-use-backgrounds nil))
+#+END_SRC
+
 *** TODO Language Support
  Need to fill this out
  - Major modes that need work:
@@ -476,6 +485,16 @@ Enable some pasting
 (define-key window-map (kbd "w") 'ace-select-window)
  #+END_SRC
 
+**** Execution Map
+#+BEGIN_SRC emacs-lisp
+(defvar execution-map (make-sparse-keymap)
+  "Common executions")
+(define-key execution-map (kbd "e") 'eshell)
+(define-key execution-map (kbd "s") 'async-shell-command)
+(define-key execution-map (kbd "b") 'eval-buffer)
+(define-key execution-map (kbd "r") 'eval-region)
+#+END_SRC
+
 **** File Manipulation
  #+BEGIN_SRC emacs-lisp
 (defvar file-map (make-sparse-keymap)
@@ -506,7 +525,7 @@ Enable some pasting
    (defun dired-retreat-from-subdir ()
      (interactive)
      (let ((parent-dir (dired-current-directory)))
-       (dired-kill-subdir)
+       (dired-subtree-remove)
        (dired-goto-file parent-dir)))
  #+END_SRC
 
@@ -533,7 +552,7 @@ Enable some pasting
    (define-key dired-mode-map (kbd "w") 'evil-forward-word-begin)
    (define-key dired-mode-map (kbd "v") 'evil-visual-char)
    (define-key dired-mode-map (kbd "x") 'dired-retreat-from-subdir)
-   (define-key dired-mode-map (kbd "TAB") 'dired-maybe-insert-subdir)
+   (define-key dired-mode-map (kbd "TAB") 'dired-subtree-insert)
    (define-key dired-mode-map (kbd "$") 'evil-end-of-line)
  #+END_SRC
 
@@ -614,8 +633,8 @@ It needs to happen after submaps are defined
 (define-key top-level-map (kbd "SPC") 'counsel-M-x)
 (define-key top-level-map (kbd "cl") 'evilnc-comment-or-uncomment-lines)
 (define-key top-level-map (kbd "u") 'universal-argument)
-(define-key top-level-map (kbd "ee") 'eshell)
 ;; To submaps
+(define-key top-level-map (kbd "e") execution-map)
 (define-key top-level-map (kbd "w") window-map)
 (define-key top-level-map (kbd "f") file-map)
 (define-key top-level-map (kbd "b") buffer-map)
@@ -689,3 +708,27 @@ Not sure how to do this
 *** DONE Upgrade to emacs 27
 CLOSED: [2020-11-01 Sun 09:27]
 Native JSON parsing support, among other things. Expect +a large+ some performance improvement
+** Misc Notes:
+*** Your first package? thedired.el
+Make a singleton dired buffer, and various commands to navigate with it:
+- thedired: function to start (or kill) a singleton dired buffer, with name thedired-buffer-name
+  - could have an ARG that optionally specifies the starting directory
+- thedired-from-here: function to navigate thedired-buffer-name to default-directory
+- that might be... it? So simple
+- idk my current dired setup is pretty smooth
+
+*** Some things while watching emacs-from-scratch on dired:
+*evil-collection-define-key* to define multiple keys for a keymap!
+*dired-listing-switches* can have a --group-directories-first option which might be nice
+You can "kill" lines in dired, which won't delete the files/folders, but just hide them
+You can "mark" files, both under point, and by regex, and then take action on them
+Dired for creating & extract archives! AAHHH
+w-dired (dired-toggle-read-only?) allows you to edit names like it's a buffer, and then Z Z to "commit" those changes?
+*** Journey to leave the terminal
+- Make dired your "shell"
+- Create ergonomic "async-shell-command" commands from within the dired buffer
+**** Try to write a custom ivy function for async shell commands
+Example/docs here https://oremacs.com/swiper/#example---counsel-locate
+Also available on info-mode iirc
+**** Pythong virtualenv's
+https://github.com/jorgenschaefer/pyvenv seems to be a solution here
