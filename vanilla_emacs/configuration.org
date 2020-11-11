@@ -36,6 +36,13 @@ This could all easily exist in "SPC-e" (SPC-e-e for eshell kind of fits)
 (electric-pair-mode +1)
 #+END_SRC
 
+*** Shell-command
+Make sure you use .zshrc
+
+#+BEGIN_SRC emacs-lisp
+(setq shell-command-switch "-ic")
+#+END_SRC
+
 ** Packages
 *** Use-package
 **** Initialize package with correct archives
@@ -418,6 +425,7 @@ CLOSED: [2020-11-04 Wed 16:51]
 
 (add-hook 'java-mode-hook
 	  (lambda ()
+      (setq indent-tabs-mode nil)
 	    (eval (lsp))
 	    (eval (lsp-ui-doc-enable-nil))
 	    (setq lsp-ui-sideline-show-hover 't)))
