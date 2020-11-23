@@ -501,6 +501,7 @@ Enable some pasting
 (define-key execution-map (kbd "s") 'async-shell-command)
 (define-key execution-map (kbd "b") 'eval-buffer)
 (define-key execution-map (kbd "r") 'eval-region)
+(define-key execution-map (kbd "ps") 'projectile-run-async-shell-command-in-root)
 #+END_SRC
 
 **** File Manipulation
