@@ -472,7 +472,7 @@ Enable some pasting
  #+BEGIN_SRC emacs-lisp
 (defvar buffer-map (make-sparse-keymap)
     "Buffer manipulation")
-(define-key buffer-map (kbd "d") 'kill-current-buffer)
+(define-key buffer-map (kbd "d") 'kill-buffer-and-window)
 (define-key buffer-map (kbd "b") 'ivy-switch-buffer)
 (define-key buffer-map (kbd "s")
   (lambda ()
