@@ -538,6 +538,27 @@ Enable some pasting
        (dired-goto-file parent-dir)))
  #+END_SRC
 
+dwim function so that I keep a dired buffer around as needed
+#+BEGIN_SRC emacs-lisp
+(defun dired-find-file-dwim ()
+  "Dired-find-file for actual files, and dired-find-alternate-file for
+directories. This way, I don't litter with a bunch of dired buffers,
+but I preserve one when I visit a file"
+  (interactive)
+  (let
+      (
+       (point-file (dired-get-file-for-visit))
+       )
+    (if
+	(file-directory-p point-file)
+	;; I use dired functions instead of find-file
+	;; or find-alternate-file directly, because there is some
+	;; safety logic on dired's side that I don't want to recreate
+	(dired-find-alternate-file)
+	(dired-find-file))
+  ))
+#+END_SRC
+
   I hate pretty much all dired defaults.
   Maybe try to deactivate the default keymap somehow?
   Overall keybindings look good here, but I should change this to match my mental model:
@@ -547,7 +568,7 @@ Enable some pasting
   a shell command from 'dired-current-directory
  #+BEGIN_SRC emacs-lisp
    (put 'dired-find-alternate-file 'disabled nil) ;; why on earth is this disabled?
-   (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)
+   (define-key dired-mode-map (kbd "RET") 'dired-find-file-dwim)
    ;; Go up a dir unless you're in a subdir, in which case collapse it
    (define-key dired-mode-map (kbd "u")
      (lambda ()
