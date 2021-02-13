@@ -289,6 +289,7 @@ because I don't use the comma in my day-to-day editing
 *** IEdit
 #+BEGIN_SRC emacs-lisp
 (use-package iedit)
+(use-package evil-iedit-state)
 #+END_SRC
 
 *** Dired-hacks
@@ -596,7 +597,7 @@ Intense filesystem/symbol searches here.
   "Search utilities")
 (define-key search-map (kbd "f") 'counsel-fzf)
 (define-key search-map (kbd "s") 'counsel-ag)
-(define-key search-map (kbd "e") 'iedit-mode)
+(define-key search-map (kbd "e") 'evil-iedit-state/iedit-mode)
 #+END_SRC
 
 **** Project Manipulation
