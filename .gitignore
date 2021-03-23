@@ -2,3 +2,5 @@
 .emacs.d/
 [#]*[#]
 vanilla_emacs/configuration.el
+
+*~
