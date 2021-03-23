@@ -35,6 +35,14 @@ This could all easily exist in "SPC-e" (SPC-e-e for eshell kind of fits)
 (menu-bar-mode -1)
 (electric-pair-mode +1)
 #+END_SRC
+*** Backup files
+Kill them So, it turns out backup files might be useful, and I might
+want to consider configuring them someday. For now, auto-saves still
+save me, and these files really feel like more trouble than they are
+worth. See [[https://stackoverflow.com/questions/151945/how-do-i-control-how-emacs-makes-backup-files][here]] for details on how I might configure later though.
+#+BEGIN_SRC emacs-lisp
+(setq make-backup-files nil)
+#+END_SRC
 
 *** Shell-command
 Make sure you use .zshrc
