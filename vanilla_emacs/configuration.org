@@ -78,15 +78,23 @@ Make sure you use .zshrc
 
 *** Theming
 **** Poet
+Commented out for pc build 1, spacemacs-dark preferred.
  #+BEGIN_SRC emacs-lisp
-   (use-package poet-theme
-     :config
-     (load-theme 'poet t)
-     (add-hook 'text-mode-hook
-	      (lambda ()
-	       (variable-pitch-mode 1))))
+   ;; (use-package poet-theme
+   ;;   :config
+   ;;   (load-theme 'poet t)
+   ;;   (add-hook 'text-mode-hook
+   ;; 	      (lambda ()
+   ;; 	       (variable-pitch-mode 1))))
  #+END_SRC
 
+**** Spacemacs
+#+BEGIN_SRC emacs-lisp
+(use-package spacemacs-theme
+  :defer t
+  :init
+  (load-theme 'spacemacs-dark t))
+#+END_SRC
 **** Fonts
 ***** all-the-icons
  Using font-family-list to download ATI only once
@@ -276,7 +284,10 @@ If neotree is open, closes it."
 (use-package magit
   :config
   (setq-default magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1))
-(use-package evil-magit)
+(use-package evil-collection
+  :after evil
+  :config
+  (evil-collection-init 'magit))
 #+END_SRC
 
 **** Magit Customizations
