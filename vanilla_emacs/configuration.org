@@ -85,6 +85,7 @@ Still haven't found a dark mode better than spacemacs
   :init
   (load-theme 'spacemacs-dark t))
 #+END_SRC
+
 **** Poet (Inactive)
 Keeping poet on ice for now.
  #+BEGIN_SRC emacs-lisp
@@ -97,13 +98,6 @@ Keeping poet on ice for now.
   ;;             (variable-pitch-mode 1))))
  #+END_SRC
 
-**** Spacemacs
-#+BEGIN_SRC emacs-lisp
-(use-package spacemacs-theme
-  :defer t
-  :init
-  (load-theme 'spacemacs-dark t))
-#+END_SRC
 **** Fonts
 ***** all-the-icons
  Using font-family-list to download ATI only once
