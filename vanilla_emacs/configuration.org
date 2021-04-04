@@ -349,7 +349,8 @@ CLOSED: [2021-01-19 Tue 20:33]
 
 ** TODO Code Editing
 This is where you can set up all the lsp stuff
-*** TODO General
+*** DONE General
+CLOSED: [2021-01-19 Tue 20:33]
 Here might be a good place to define the generic functions discussed
 in the [[Language Map]] section. For now, see that defined submap for
 generic keybindings.
@@ -445,6 +446,17 @@ CLOSED: [2020-11-04 Wed 16:51]
 	    (setq lsp-ui-sideline-show-hover 't)))
 #+END_SRC
 **** TODO make the location of lombok more generic
+*** C
+Assumes that [[https://github.com/MaskRay/ccls][ccls]] is installed.
+#+BEGIN_SRC emacs-lisp
+(add-hook 'c-mode-hook (
+                            lambda ()
+                                (eval (lsp))
+                                (eval (lsp-ui-doc-enable nil))
+                                (eval (lsp-ui-sideline-mode))
+                                (setq lsp-ui-sideline-show-hover 't)
+                                (setq lsp-ui-sideline-show-diagnostics 't)))
+#+END_SRC
 *** TODO Python
 *** TODO Ruby
 *** TODO C#
@@ -505,6 +517,7 @@ Enable some pasting
 (define-key window-map (kbd "d") 'delete-window)
 (define-key window-map (kbd "D") 'ace-delete-window)
 (define-key window-map (kbd "w") 'ace-select-window)
+(define-key window-map (kbd "=") 'balance-windows)
  #+END_SRC
 
 **** Execution Map
