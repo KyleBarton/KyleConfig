@@ -51,6 +51,66 @@ Make sure you use .zshrc
 (setq shell-command-switch "-ic")
 #+END_SRC
 
+** Emacs Functions
+*** Window Sizing
+'kjb/cycle-window-size' is a function meant to cycle the window split
+size such that (size of window)/(frame size - size of window) toggles
+between 1.0 (a 50-50 window split), 1.618 (Golden ratio, current
+window larger), and 0.618 (Golden ratio, current window
+smaller). Right now, I just have it set up for vertical splits because
+this is my primary use-case. But a small bit of refactoring should
+make this usable for horizontal splits as well.
+#+BEGIN_SRC emacs-lisp
+(defvar cycle-window-count 0
+  "Tracks which window size to cycle in kjb/cycle-window-size")
+
+(defun kjb/window-width-from-ratio (ratio)
+  "Returns desired window width such that its size in columns
+  divided by the remaining frame size equals `ratio':
+f = frame size
+w = window size <== solve for this
+r = ratio
+w / (f - w) = r
+w = (f - w)r
+w = fr - wr
+w + wr = fr
+w(1 + r) = fr
+w = fr / (1 + r)
+"
+  (let
+      ((frame-curr-width (frame-width))
+       (window-curr-width (window-total-width)))
+    (/ (* ratio frame-curr-width) (+ 1 ratio))))
+
+(defun kjb/window-delta-from-ratio (ratio)
+  "Returns the desired delta for `enlarge-window-horizontally' so that
+  window width is equal to the output from
+  `kjb/window-width-from-ratio'. Returns an integer"
+  (truncate (-
+   (kjb/window-width-from-ratio ratio)
+   (window-total-width))))
+
+;; TODO handle when there is a single window to avoid a warning
+;; message; non-urgent.
+(defun kjb/cycle-window-size ()
+  "Toggle window size between half, more than half (golden ratio) and less than have (gr)"
+  (interactive)
+  (let*
+      ((ratio-map
+	'((0 . 1.618)
+	 (1 . 1.0)
+	 (2 . 0.618))))
+    (progn
+      (unless
+	  (and
+	   (eq this-command last-command)
+	   (<= cycle-window-count 2))
+	(setq cycle-window-count 0))
+      (enlarge-window-horizontally
+       (kjb/window-delta-from-ratio
+	(cdr (assoc cycle-window-count ratio-map))))
+      (setq cycle-window-count (+ cycle-window-count 1)))))
+#+END_SRC
 ** Packages
 *** Use-package
 **** Initialize package with correct archives
@@ -544,6 +604,7 @@ Enable some pasting
 (define-key window-map (kbd "D") 'ace-delete-window)
 (define-key window-map (kbd "w") 'ace-select-window)
 (define-key window-map (kbd "=") 'balance-windows)
+(define-key window-map (kbd "r") 'kjb/cycle-window-size)
  #+END_SRC
 
 **** Execution Map
@@ -786,8 +847,13 @@ CLOSED: [2020-10-29 Thu 21:13]
 *** DONE Magit
 CLOSED: [2020-10-28 Wed 23:34]
 Like, any of it.
-*** TODO Window resizing
+*** DONE Window resizing
+CLOSED: [2021-04-10 Sat 12:05]
 Not sure how to do this
+:APRIL2021:
+Figured this out! Simply using some math and
+window-total-size/frame-size. I've come a long way with elisp comfort.
+:END:
 *** DONE Upgrade to emacs 27
 CLOSED: [2020-11-01 Sun 09:27]
 Native JSON parsing support, among other things. Expect +a large+ some performance improvement
