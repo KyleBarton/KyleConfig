@@ -346,7 +346,10 @@ If neotree is open, closes it."
 (use-package magit
   :config
   (setq-default magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1))
-(use-package evil-magit)
+(use-package evil-collection
+  :after evil
+  :config
+  (evil-collection-init 'magit))
 #+END_SRC
 
 **** Magit Customizations
@@ -399,7 +402,7 @@ CLOSED: [2020-10-29 Thu 21:25]
 **** DONE rust
 CLOSED: [2020-10-29 Thu 22:45]
  #+BEGIN_SRC emacs-lisp
-   (use-package rust-mode)
+(use-package rustic)
  #+END_SRC
 
 **** DONE Kotlin
@@ -467,9 +470,8 @@ Assumes rust-analyzer installed
 #+BEGIN_SRC emacs-lisp
 (add-hook 'rust-mode-hook (
                             lambda ()
-                                (setq lsp-rust-server 'rust-analyzer)
+                                ;; Default is 'rust-analyzer because of rustic
                                 (setq rust-indent-offset 2)
-                                ;; (setq lsp-rust-server 'rls)
                                 (eval (lsp))
                                 (eval (lsp-ui-doc-enable nil))
                                 (eval (lsp-ui-sideline-mode))
@@ -698,6 +700,7 @@ but I preserve one when I visit a file"
    (define-key dired-mode-map (kbd "x") 'dired-retreat-from-subdir)
    (define-key dired-mode-map (kbd "TAB") 'dired-subtree-insert)
    (define-key dired-mode-map (kbd "$") 'evil-end-of-line)
+   (define-key dired-mode-map (kbd "g") 'revert-buffer)
  #+END_SRC
 
 **** Search
