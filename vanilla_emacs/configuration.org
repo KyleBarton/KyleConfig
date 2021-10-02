@@ -5,7 +5,7 @@ Stuff related to .emacs, .emacs.d, and generally making config work easier
 I like to have the emacs directory set relative to the .emacs file, and, correspondingly, this file:
 #+BEGIN_SRC emacs-lisp
 (setq user-emacs-directory
-  (file-truename (concat default-directory ".emacs.d/")))
+  (file-truename (concat (getenv "HOME") "/.emacs.d/")))
 #+END_SRC
 
 *** Editing config
