@@ -111,6 +111,32 @@ w = fr / (1 + r)
 	(cdr (assoc cycle-window-count ratio-map))))
       (setq cycle-window-count (+ cycle-window-count 1)))))
 #+END_SRC
+*** Eshell
+The advice `kjb/eshell-init-on-default-directory` ensures that eshell
+opens into the directory that I'm currently located in. And as I now
+write this out, I'm realizing that this could probably have just been
+defined in a function, rather than advice... This would be more
+extendable for other keybindings (for instance, SPACE-e-p could open
+eshell in the projectile directory). Well, TODO I guess.
+
+#+BEGIN_SRC emacs-lisp
+(defun kjb/run-in-eshell (cmd)
+  (with-current-buffer "*eshell*"
+    (end-of-buffer)
+    (insert cmd)
+    (eshell-send-input)
+    (end-of-buffer)))
+
+(defun kjb/eshell-init-on-default-directory (orig-fun &rest args)
+  (let
+      ((destination_dir default-directory))
+    (progn
+      (apply orig-fun args)
+      (cd destination_dir)
+      (kjb/run-in-eshell ""))))
+
+(advice-add 'eshell :around #'kjb/eshell-init-on-default-directory)
+#+END_SRC
 ** Packages
 *** Use-package
 **** Initialize package with correct archives
