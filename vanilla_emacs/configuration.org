@@ -193,6 +193,17 @@ Keeping poet on ice for now.
        (all-the-icons-install-fonts t)))
  #+END_SRC
 
+*** Environment
+Use `exec-path-from-shell` to copy the shell environment over into
+Emacs when it starts in OS X. The MacOs application launcher doesn't
+really handle the environment very well, so best to just copy shell
+behavior
+#+BEGIN_SRC emacs-lisp
+(use-package exec-path-from-shell
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
+#+END_SRC
 *** Company
 **** Base-company
 I can use the better 'after-init-hook when this loaded from my actual
