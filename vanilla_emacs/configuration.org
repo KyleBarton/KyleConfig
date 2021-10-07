@@ -593,6 +593,7 @@ Assumes that [[https://github.com/MaskRay/ccls][ccls]] is installed.
 (setq-default org-log-done 'time)
 (setq-default org-startup-with-inline-images 't)
 (evil-define-key 'normal org-mode-map (kbd "t") 'org-todo)
+(evil-define-key 'normal org-mode-map (kbd "<tab>") 'org-cycle)
 ;; Don't evil-auto-indent in org mode pls
 (add-hook 'org-mode-hook (
 			  lambda ()
