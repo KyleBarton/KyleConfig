@@ -630,6 +630,10 @@ Enable some pasting
   (lambda ()
     (interactive)
     (switch-to-buffer "*scratch*")))
+(define-key buffer-map (kbd "e")
+  (lambda ()
+    (interactive)
+    (find-file (file-truename (concat (getenv "HOME") "/.emacs")))))
  #+END_SRC
 
 **** Window Manipulation
@@ -679,6 +683,10 @@ Enable some pasting
      (lambda ()
        (interactive)
        (dired (projectile-project-root))))
+  (define-key dired-activate-map (kbd "~") ;; open dired in project dir
+      (lambda ()
+        (interactive)
+        (dired (getenv "HOME"))))
  #+END_SRC
 
 ***** Dired Mode
