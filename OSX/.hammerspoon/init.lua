@@ -15,18 +15,26 @@
 ----------------------------------------------------------------------------------------
 -- KEYBOARD SHORTCUTS
   -- caps-caps: create or focus on a "main" emacsclient window -- DONE
-  -- caps-w: open an ivy-select-windows emacsclient window
+  -- caps-w: open an ivy-select-windows emacsclient window -- DONE
 -- GRAPHICS
   -- Create a nonintrusive graphic alert for entering/exiting command mode
 -- FANCY CONCEPTS
   -- In browser, if focused on a text input, pipe to an emacs scratch window for editing, and pipe back on exit
 ----------------------------------------------------------------------------------------
 
-CommandMode = hs.hotkey.modal.new('', 'f18')
+-- Allow emacs to call hs back for window manipulation
+require("hs.ipc")
+
+local constants = require(".constants")
+local keys = constants.keys
+local ecUtils = require(".emacsclient_utils")
+local debugUtils = require(".debug_utils")
+
+CommandMode = hs.hotkey.modal.new('', keys.CAPS_LOCK)
 
 COMMAND_MODE_ON = false
 
-LOGGER = hs.logger.new('mylogger', 'debug')
+LOGGER = hs.logger.new('init', constants.LOG_LEVEL)
 
 -- Name of the central emacs frame, in full screen.
 PRIMARY_EMACS = "EMACS_MAIN"
@@ -34,12 +42,10 @@ PRIMARY_EMACS = "EMACS_MAIN"
 -- Disable animations
 hs.window.animationDuration = 0
 
--- Exit CommandMode 3 seconds after entering, due to inactivity.
 function CommandMode:entered()
   COMMAND_MODE_ON = true
+  -- Exit if no subsequent command after 3 seconds
   hs.timer.doAfter(3, function()
-      -- Commands should exit command mode on their way out, so this
-      -- is only necessary if the user isn't issueing a command
       if COMMAND_MODE_ON then
 	CommandMode:exit()
       end
@@ -52,70 +58,12 @@ function CommandMode:exited()
 end
 
 
-CommandMode:bind('', 'escape', function()
+CommandMode:bind('', keys.ESCAPE, function()
     CommandMode:exit()
 end)
 
-function emacsclientWithEvalNoFrame(elisp)
-   args = nil
-   if elisp and elisp ~= '' then
-      args = {
-	 '--eval',
-	 elisp,
-	 '--alternate-editor='
-      }
-   else
-      args = {
-	 '--alternate-editor='
-      }
-   end
-
-   local emacsClientTask = hs.task.new(
-      '/usr/local/bin/emacsclient',
-      function(code, out, err)
-	 if err then
-	    LOGGER.e(err)
-	 end
-      end,
-      args
-   )
-
-   emacsClientTask:start()
-
-end
-
-function emacsclientWithEval(elisp)
-   args = nil
-   if elisp and elisp ~= '' then
-      args = {
-	 '-c',
-	 '--eval',
-	 elisp,
-	 '--alternate-editor='
-      }
-   else
-      args = {
-	 '-c',
-	 '--alternate-editor='
-      }
-   end
-
-   local emacsClientTask = hs.task.new(
-      '/usr/local/bin/emacsclient',
-      function(code, out, err)
-	 if err then
-	    LOGGER.e(err)
-	 end
-      end,
-      args
-   )
-
-   emacsClientTask:start()
-
-end
-
-function focusAndGetExistingWindow(hint)
-   local found = hs.window.find(hint)
+function focusWindowByTitle(windowTitle)
+   local found = hs.appfinder.windowFromWindowTitle(windowTitle)
    if found then
       found:focus()
    end
@@ -123,10 +71,10 @@ function focusAndGetExistingWindow(hint)
 end
 
 function goToMainEmacs(shouldRetry)
-   local primaryEmacs = focusAndGetExistingWindow(PRIMARY_EMACS)
+   local primaryEmacs = hs.window.find(PRIMARY_EMACS)
 
    if not primaryEmacs then
-      emacsclientWithEval(string.format('(set-frame-name "%s")', PRIMARY_EMACS))
+      ecUtils.evalWithFrame(string.format('(set-frame-name "%s")', PRIMARY_EMACS))
       if shouldRetry then
 	 -- Sometimes the frame needs a moment to appear, so we add a
 	 -- single retry
@@ -142,22 +90,21 @@ function goToMainEmacs(shouldRetry)
       peFrame.w = maxFrame.w
       peFrame.h = maxFrame.h
       primaryEmacs:setFrame(peFrame)
+      primaryEmacs:focus()
    end
 end
 
-function openEmacsIvyFunc(windowName, ivyFunc)
-   local modalWindow = nil
-   emacsclientWithEvalNoFrame(string.format('(kjb/make-mini-frame-test "%s")', windowName))
-   hs.timer.doAfter(0.3, function()
-	 modalWindow = focusAndGetExistingWindow(windowName)
-	 if modalWindow then
-	    modalWindow:centerOnScreen()
-	 end
-   end)
+-- Ok, so we're agreeing on an interface here: (ivyFunc windowName
+-- Options). Emacs will have to handle the rest. Which means emacs
+-- will have to be aware of certain hs lua functions, which isn't
+-- great. Perhaps I should just agree on an interface on the other
+-- end.
+function openOptionsWindow(windowName, ivyFunc, options)
+   ecUtils.callIvyFunc(windowName, ivyFunc, options)
+   hs.timer.doAfter(0.3, function() focusWindowByTitle(windowName) end)
 end
 
-
-CommandMode:bind('', 'f18', function()
+CommandMode:bind('', keys.CAPS_LOCK, function()
       CommandMode:exit()
       goToMainEmacs(true)
 end)
@@ -167,42 +114,32 @@ CommandMode:bind('', 'r', function()
       hs.reload()
 end)
 
--- TODO Turn this into a window selector with ivy
 CommandMode:bind('', 'w', function()
       CommandMode:exit()
-      openEmacsIvyFunc('test', '')
-end)
+      
+      local windowNames = {}
+      for key, val in pairs(hs.window.allWindows()) do
 
-----------------------------------------------------------------------------------------
--- Various Debugging Functions as I learn Hammerspoon/Lua
-----------------------------------------------------------------------------------------
-
-function showApps()
-    for key, val in pairs(hs.application.runningApplications()) do
-      LOGGER.i(val:title())
-    end
-end
-
-function showWindows()
-   for key, val in pairs(hs.window.allWindows()) do
-      LOGGER.i(val:title())
-   end
-end
-
-CommandMode:bind('', 'l', function()
-      CommandMode:exit()
-      showWindows()
-end)
-
-CommandMode:bind('', 't', function()
-      CommandMode:exit()
-      if hs.appfinder.appFromName('Emacs') then
-	 LOGGER.i("Emacs is here")
-      else
-	 LOGGER.i("No emacs here")
+	 -- In cases when the window name has a " in it, emacs <->
+	 -- Hammerspoon IPC struggles if we don't escape the quotation
+	 -- explicitly.
+	 windowNames[#windowNames+1] = val:title():gsub("\"", "\\\"")
       end
+      
+      openOptionsWindow('test', 'hs-ivy/hs-window-select', windowNames)
 end)
 
-
+----------------------------------------------------------------------------------------
+-- Functions built to be called by emacs
+----------------------------------------------------------------------------------------
+function getWindowTitlesByHint(hint)
+   local windows = hs.window.allWindows()
+   local windowTitles = {}
+   for _, val in pairs(windows) do
+      windowTitles[#windowTitles+1] = val:title()
+   end
+   -- return luaArrayToElispList(windowTitles)
+   return windowTitles
+end
 
 hs.alert'Config Loaded'
