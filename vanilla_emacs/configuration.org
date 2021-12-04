@@ -423,7 +423,6 @@ Enables a "tree-like" dired navigation
  Need to fill this out
  - Major modes that need work:
      - Python
-     - Rust (in progress)
      - Typescript/Javascript
      - Java
      - C#
@@ -436,6 +435,13 @@ CLOSED: [2020-10-29 Thu 21:25]
 (use-package lsp-ui)
 #+END_SRC
 
+**** DONE Lua
+CLOSED: [2021-12-03 Fri 22:26]
+#+BEGIN_SRC emacs-lisp
+(use-package lua-mode
+  :config
+  (setq-default lua-indent-nested-block-content-align nil))
+#+END_SRC
 **** DONE rust
 CLOSED: [2020-10-29 Thu 22:45]
  #+BEGIN_SRC emacs-lisp
@@ -472,6 +478,18 @@ Using web-mode for html/mustache/php & variants.
   (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
+#+END_SRC
+*** Hammerspoon integration
+With hammerspoon installed, I have a package, /hs-ivy/, which provides
+some utilities so that I can use an ivy-like window selection. This is
+promising, but further work is needed. Some things to consider:
+- Better encapsulation of concerns on both the elisp and lua side
+- A README in the hammerspoon folder, for better details
+- Some auto window sizing, and other utilities.
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path (expand-file-name ".emacs_custom_packages" default-directory))
+(use-package hs-ivy
+  :ensure nil)
 #+END_SRC
 ** TODO Code Editing
 This is where you can set up all the lsp stuff
