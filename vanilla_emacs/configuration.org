@@ -626,35 +626,35 @@ could be more sophisticated here once I have a comp-specific config
 solution set up.
 
 #+BEGIN_SRC emacs-lisp
-    (setq epa-file-encrypt-to '("kjbarton4@gmail.com"))
-    ;; This should be ok as nil once `epa-file-encrypt-to' is filled, but
-    ;; there is a bug. See https://superuser.com/a/1561209
-    (setq epa-file-select-keys 1)
-    (use-package org-roam
-      :config
-      (setq org-roam-directory
-            (file-truename "/Users/kylebarton/Dropbox/Local/Org/org-roam"))
-      ;; use gpg file extension to force encryption
-      (setq org-roam-capture-templates
-            '(("d" "default" plain "%?"
-               :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org.gpg"
-                                  "#+title: ${title}")
-               :unnarrowed t)))
-      (org-roam-db-autosync-mode)
+(setq epa-file-encrypt-to '("kjbarton4@gmail.com"))
+;; This should be ok as nil once `epa-file-encrypt-to' is filled, but
+;; there is a bug. See https://superuser.com/a/1561209
+(setq epa-file-select-keys 1)
+(use-package org-roam
+  :config
+  (setq org-roam-directory
+        (file-truename "/Users/kybarton/Dropbox/Local/Org/org-roam"))
+  ;; use gpg file extension to force encryption
+  (setq org-roam-capture-templates
+        '(("d" "default" plain "%?"
+            :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org.gpg"
+                              "#+title: ${title}")
+            :unnarrowed t)))
+  (org-roam-db-autosync-mode)
 
-      ;; set up some dailies details
-      (setq org-roam-dailies-directory "daily/")
+  ;; set up some dailies details
+  (setq org-roam-dailies-directory "daily/")
 
-      (setq org-roam-dailies-capture-templates
-            '(("d" "default" entry
-               "* %?"
-               :target (file+head "%<%Y-%m-%d>.org.gpg"
-                                  "#+title: %<%Y-%m-%d>\n"))
-              ("t" "timestamped note" entry
-               "* %<%H>:%<%M>\n %?"
-               :target (file+head+olp "%<%Y-%m-%d>.org.gpg"
-                                  "#+title: %<%Y-%m-%d>\n"
-                                  ("Minutes"))))))
+  (setq org-roam-dailies-capture-templates
+        '(("d" "default" entry
+            "* %?"
+            :target (file+head "%<%Y-%m-%d>.org.gpg"
+                              "#+title: %<%Y-%m-%d>\n"))
+          ("t" "timestamped note" entry
+            "* %<%H>:%<%M>\n %?"
+            :target (file+head+olp "%<%Y-%m-%d>.org.gpg"
+                              "#+title: %<%Y-%m-%d>\n"
+                              ("Minutes"))))))
 #+END_SRC
 
 ** Key Maps
