@@ -649,6 +649,10 @@ solution set up.
           '(("d" "default" entry
              "* %?"
              :target (file+head "%<%Y-%m-%d>.org.gpg"
+                                "#+title: %<%Y-%m-%d>\n"))
+	    ("t" "timestamped note" entry
+	     "* %<%H>:%<%M>\n %?"
+             :target (file+head "%<%Y-%m-%d>.org.gpg"
                                 "#+title: %<%Y-%m-%d>\n")))))
 #+END_SRC
 
