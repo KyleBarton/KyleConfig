@@ -633,7 +633,7 @@ solution set up.
 (use-package org-roam
   :config
   (setq org-roam-directory
-        (file-truename "/Users/kybarton/Dropbox/Local/Org/org-roam"))
+        (file-truename "/Users/kylebarton/Dropbox/Local/Org/org-roam"))
   ;; use gpg file extension to force encryption
   (setq org-roam-capture-templates
         '(("d" "default" plain "%?"
