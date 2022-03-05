@@ -3,7 +3,9 @@ local constants = require('.constants')
 LOGGER = hs.logger.new('emacsclient_utils', constants.LOG_LEVEL)
 
 -- Emacs Utils
-local mod = {}
+local mod = {
+   ec_executable = '/opt/homebrew/bin/emacsclient'
+}
 
 function mod.luaArrayToElispList(arr)
    local stringedList = "("
@@ -32,7 +34,7 @@ function mod.evalWithFrame(elisp)
    end
 
    local emacsClientTask = hs.task.new(
-      '/usr/local/bin/emacsclient',
+      mod.ec_executable,
       function(code, out, err)
 	 if err then
 	    LOGGER.e(err)
@@ -60,7 +62,7 @@ function mod.evalNoFrame(elisp)
    end
 
    local emacsClientTask = hs.task.new(
-      '/usr/local/bin/emacsclient',
+      mod.ec_executable,
       function(code, out, err)
 	 if err and err ~= '' then
 	    LOGGER.e(err)
