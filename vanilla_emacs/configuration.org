@@ -20,6 +20,15 @@ Actually, an "eval-map" would probably be useful as well:
 - Eval expression (honestly just use eshell)
 - Eval .emacs
 This could all easily exist in "SPC-e" (SPC-e-e for eshell kind of fits)
+*** Custom packages
+I maintain a number of custom packages (primarily for hammerspoon
+integration) in a subfolder of this directory. I add it to the load
+path here for future use with use-package:
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path (expand-file-name ".emacs_custom_packages" default-directory))
+#+END_SRC
+
 ** Core Emacs Preferences
 *** Scrolling/Buffer control
 #+BEGIN_SRC emacs-lisp
@@ -486,8 +495,13 @@ promising, but further work is needed. Some things to consider:
 - Better encapsulation of concerns on both the elisp and lua side
 - A README in the hammerspoon folder, for better details
 - Some auto window sizing, and other utilities.
+
+*UPDATE* I have now added multiple packages for hamemrspoon and have
+moved the `load-path` addition up to my meta-config. Long-term, this
+stuff should probably live with Ivy, but I need to iterate on this a
+bit (and also likely move from ivy to a different selection front-end)
+
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path (expand-file-name ".emacs_custom_packages" default-directory))
 (use-package hs-ivy
   :ensure nil)
 #+END_SRC
@@ -655,6 +669,14 @@ solution set up.
             :target (file+head+olp "%<%Y-%m-%d>.org.gpg"
                               "#+title: %<%Y-%m-%d>\n"
                               ("Minutes"))))))
+#+END_SRC
+
+Adds my custom `hs-org-capture` package for taking capture notes using
+hammerspoon shortcuts. Currently, relies on `org-roam` and `s`
+
+#+BEGIN_SRC emacs-lisp
+(use-package hs-org-capture
+  :ensure nil)
 #+END_SRC
 
 ** Key Maps

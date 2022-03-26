@@ -129,6 +129,19 @@ CommandMode:bind('', 'w', function()
       openOptionsWindow('test', 'hs-ivy/hs-window-select', windowNames)
 end)
 
+-- Try taking a quick note and deleting frame after.
+-- Window focus and single frame focus not working as expected.
+CommandMode:bind('', 'n', function()
+      CommandMode:exit()
+
+      ecUtils.evalNoFrame("(hs-org-capture/org-roam-daily-capture-timestamp)")
+      hs.timer.doAfter(0.3,
+	 function()
+	    hs.window.find("hs-org-capture/org-roam-daily-capture-timestamp--frame-name"):focus()
+	 end
+      )
+end)
+
 ----------------------------------------------------------------------------------------
 -- Functions built to be called by emacs
 ----------------------------------------------------------------------------------------
