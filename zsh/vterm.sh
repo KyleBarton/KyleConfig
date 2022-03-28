@@ -5,7 +5,7 @@
 
 # vterm functions here borrowed verbatum from https://github.com/akermu/emacs-libvterm
 
-# you need coreutils on a mac: `brew install coreutils`
+# you need coreutils on a mac in order to get `realpath` (see find_file): `brew install coreutils`
 
 vterm_printf() {
     if [ -n "$TMUX" ] && ([ "${TERM%%-*}" = "tmux" ] || [ "${TERM%%-*}" = "screen" ] ); then
@@ -29,6 +29,18 @@ vterm_cmd() {
     vterm_printf "51;E$vterm_elisp"
 }
 
+# Emacs commands callable from vterm
 find_file() {
     vterm_cmd find-file "$(realpath "${@:-.}")"
 }
+
+say() {
+    vterm_cmd message "%s" "$*"
+}
+
+# Enables directory + prompt tracking
+vterm_prompt_end() {
+    vterm_printf "51;A$(whoami)@$(hostname):$(pwd)";
+}
+setopt PROMPT_SUBST
+PROMPT=$PROMPT'%{$(vterm_prompt_end)%}'

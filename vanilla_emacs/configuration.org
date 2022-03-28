@@ -4,8 +4,8 @@ Stuff related to .emacs, .emacs.d, and generally making config work easier
 *** .emacs.d
 I like to have the emacs directory set relative to the .emacs file, and, correspondingly, this file:
 #+BEGIN_SRC emacs-lisp
-(setq user-emacs-directory
-  (file-truename (concat (getenv "HOME") "/.emacs.d/")))
+  (setq user-emacs-directory
+        (file-truename (concat (getenv "HOME") "/.emacs.d/")))
 #+END_SRC
 
 *** Editing config
@@ -26,23 +26,23 @@ integration) in a subfolder of this directory. I add it to the load
 path here for future use with use-package:
 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path (expand-file-name ".emacs_custom_packages" default-directory))
+  (add-to-list 'load-path (expand-file-name ".emacs_custom_packages" default-directory))
 #+END_SRC
 
 ** Core Emacs Preferences
 *** Scrolling/Buffer control
 #+BEGIN_SRC emacs-lisp
-(setq-default scroll-conservatively 5)
+  (setq-default scroll-conservatively 5)
 #+END_SRC
 
 *** Basic visual preferences
 #+BEGIN_SRC emacs-lisp
-(setq inhibit-startup-message t)
-(scroll-bar-mode -1)
-(tool-bar-mode -1)
-(tooltip-mode -1)
-(menu-bar-mode -1)
-(electric-pair-mode +1)
+  (setq inhibit-startup-message t)
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1)
+  (tooltip-mode -1)
+  (menu-bar-mode -1)
+  (electric-pair-mode +1)
 #+END_SRC
 *** Backup files
 Kill them So, it turns out backup files might be useful, and I might
@@ -50,14 +50,14 @@ want to consider configuring them someday. For now, auto-saves still
 save me, and these files really feel like more trouble than they are
 worth. See [[https://stackoverflow.com/questions/151945/how-do-i-control-how-emacs-makes-backup-files][here]] for details on how I might configure later though.
 #+BEGIN_SRC emacs-lisp
-(setq make-backup-files nil)
+  (setq make-backup-files nil)
 #+END_SRC
 
 *** Shell-command
 Make sure you use .zshrc
 
 #+BEGIN_SRC emacs-lisp
-(setq shell-command-switch "-ic")
+  (setq shell-command-switch "-ic")
 #+END_SRC
 
 ** Emacs Functions
@@ -70,55 +70,55 @@ smaller). Right now, I just have it set up for vertical splits because
 this is my primary use-case. But a small bit of refactoring should
 make this usable for horizontal splits as well.
 #+BEGIN_SRC emacs-lisp
-(defvar cycle-window-count 0
-  "Tracks which window size to cycle in kjb/cycle-window-size")
+  (defvar cycle-window-count 0
+    "Tracks which window size to cycle in kjb/cycle-window-size")
 
-(defun kjb/window-width-from-ratio (ratio)
-  "Returns desired window width such that its size in columns
-  divided by the remaining frame size equals `ratio':
-f = frame size
-w = window size <== solve for this
-r = ratio
-w / (f - w) = r
-w = (f - w)r
-w = fr - wr
-w + wr = fr
-w(1 + r) = fr
-w = fr / (1 + r)
-"
-  (let
-      ((frame-curr-width (frame-width))
-       (window-curr-width (window-total-width)))
-    (/ (* ratio frame-curr-width) (+ 1 ratio))))
+  (defun kjb/window-width-from-ratio (ratio)
+    "Returns desired window width such that its size in columns
+    divided by the remaining frame size equals `ratio':
+  f = frame size
+  w = window size <== solve for this
+  r = ratio
+  w / (f - w) = r
+  w = (f - w)r
+  w = fr - wr
+  w + wr = fr
+  w(1 + r) = fr
+  w = fr / (1 + r)
+  "
+    (let
+        ((frame-curr-width (frame-width))
+         (window-curr-width (window-total-width)))
+      (/ (* ratio frame-curr-width) (+ 1 ratio))))
 
-(defun kjb/window-delta-from-ratio (ratio)
-  "Returns the desired delta for `enlarge-window-horizontally' so that
-  window width is equal to the output from
-  `kjb/window-width-from-ratio'. Returns an integer"
-  (truncate (-
-   (kjb/window-width-from-ratio ratio)
-   (window-total-width))))
+  (defun kjb/window-delta-from-ratio (ratio)
+    "Returns the desired delta for `enlarge-window-horizontally' so that
+    window width is equal to the output from
+    `kjb/window-width-from-ratio'. Returns an integer"
+    (truncate (-
+               (kjb/window-width-from-ratio ratio)
+               (window-total-width))))
 
-;; TODO handle when there is a single window to avoid a warning
-;; message; non-urgent.
-(defun kjb/cycle-window-size ()
-  "Toggle window size between half, more than half (golden ratio) and less than have (gr)"
-  (interactive)
-  (let*
-      ((ratio-map
-	'((0 . 1.618)
-	 (1 . 1.0)
-	 (2 . 0.618))))
-    (progn
-      (unless
-	  (and
-	   (eq this-command last-command)
-	   (<= cycle-window-count 2))
-	(setq cycle-window-count 0))
-      (enlarge-window-horizontally
-       (kjb/window-delta-from-ratio
-	(cdr (assoc cycle-window-count ratio-map))))
-      (setq cycle-window-count (+ cycle-window-count 1)))))
+  ;; TODO handle when there is a single window to avoid a warning
+  ;; message; non-urgent.
+  (defun kjb/cycle-window-size ()
+    "Toggle window size between half, more than half (golden ratio) and less than have (gr)"
+    (interactive)
+    (let*
+        ((ratio-map
+          '((0 . 1.618)
+            (1 . 1.0)
+            (2 . 0.618))))
+      (progn
+        (unless
+            (and
+             (eq this-command last-command)
+             (<= cycle-window-count 2))
+          (setq cycle-window-count 0))
+        (enlarge-window-horizontally
+         (kjb/window-delta-from-ratio
+          (cdr (assoc cycle-window-count ratio-map))))
+        (setq cycle-window-count (+ cycle-window-count 1)))))
 #+END_SRC
 *** Eshell
 The advice `kjb/eshell-init-on-default-directory` ensures that eshell
@@ -129,78 +129,78 @@ extendable for other keybindings (for instance, SPACE-e-p could open
 eshell in the projectile directory). Well, TODO I guess.
 
 #+BEGIN_SRC emacs-lisp
-(defun kjb/run-in-eshell (cmd)
-  (with-current-buffer "*eshell*"
-    (end-of-buffer)
-    (insert cmd)
-    (eshell-send-input)
-    (end-of-buffer)))
+  (defun kjb/run-in-eshell (cmd)
+    (with-current-buffer "*eshell*"
+      (end-of-buffer)
+      (insert cmd)
+      (eshell-send-input)
+      (end-of-buffer)))
 
-(defun kjb/eshell-init-on-default-directory (orig-fun &rest args)
-  (let
-      ((destination_dir default-directory))
-    (progn
-      (apply orig-fun args)
-      (cd destination_dir)
-      (kjb/run-in-eshell ""))))
+  (defun kjb/eshell-init-on-default-directory (orig-fun &rest args)
+    (let
+        ((destination_dir default-directory))
+      (progn
+        (apply orig-fun args)
+        (cd destination_dir)
+        (kjb/run-in-eshell ""))))
 
-(advice-add 'eshell :around #'kjb/eshell-init-on-default-directory)
+  (advice-add 'eshell :around #'kjb/eshell-init-on-default-directory)
 #+END_SRC
 ** Packages
 *** Use-package
 **** Initialize package with correct archives
- #+BEGIN_SRC emacs-lisp
-(require 'package)
-(setq package-archives `(("gnu" . "https://elpa.gnu.org/packages/")
-                        ("melpa" . "https://melpa.org/packages/")
-                        ("melpa-stable" . "https://stable.melpa.org/packages/")
-                        ("org" . "https://orgmode.org/elpa/")))
+#+BEGIN_SRC emacs-lisp
+  (require 'package)
+  (setq package-archives `(("gnu" . "https://elpa.gnu.org/packages/")
+                           ("melpa" . "https://melpa.org/packages/")
+                           ("melpa-stable" . "https://stable.melpa.org/packages/")
+                           ("org" . "https://orgmode.org/elpa/")))
 
-(package-initialize)
-(unless package-archive-contents
-(package-refresh-contents))
- #+END_SRC
+  (package-initialize)
+  (unless package-archive-contents
+    (package-refresh-contents))
+#+END_SRC
 
 **** Install use-package
- Everything after this should use use-package for management
- #+BEGIN_SRC emacs-lisp
- (unless (package-installed-p 'use-package)
-   (package-install 'use-package))
+Everything after this should use use-package for management
+#+BEGIN_SRC emacs-lisp
+  (unless (package-installed-p 'use-package)
+    (package-install 'use-package))
 
- (require 'use-package)
- (setq use-package-always-ensure t)
- #+END_SRC
+  (require 'use-package)
+  (setq use-package-always-ensure t)
+#+END_SRC
 
 *** Theming
 **** Spacemacs
 Still haven't found a dark mode better than spacemacs
 #+BEGIN_SRC emacs-lisp
-(use-package spacemacs-theme
-  :defer t
-  :init
-  (load-theme 'spacemacs-dark t))
+  ;; (use-package spacemacs-theme
+  ;;   :defer t
+  ;;   :init
+  ;;   (load-theme 'spacemacs-dark t))
 #+END_SRC
 **** Poet (Inactive)
 Keeping poet on ice for now.
- #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
   ;; (use-package poet-theme
   ;;   :init
   ;;   (load-theme 'poet t)
   ;;   :config
   ;;   (add-hook 'text-mode-hook
-  ;;           (lambda ()
-  ;;             (variable-pitch-mode 1))))
- #+END_SRC
+  ;;             (lambda ()
+  ;;               (variable-pitch-mode 1))))
+#+END_SRC
 
 **** Fonts
 ***** all-the-icons
- Using font-family-list to download ATI only once
- #+BEGIN_SRC emacs-lisp
-   (use-package all-the-icons
-     :config
-     (unless (member "all-the-icons" (font-family-list))
-       (all-the-icons-install-fonts t)))
- #+END_SRC
+Using font-family-list to download ATI only once
+#+BEGIN_SRC emacs-lisp
+  (use-package all-the-icons
+    :config
+    (unless (member "all-the-icons" (font-family-list))
+      (all-the-icons-install-fonts t)))
+#+END_SRC
 
 *** Environment
 Use `exec-path-from-shell` to copy the shell environment over into
@@ -208,10 +208,10 @@ Emacs when it starts in OS X. The MacOs application launcher doesn't
 really handle the environment very well, so best to just copy shell
 behavior
 #+BEGIN_SRC emacs-lisp
-(use-package exec-path-from-shell
-  :config
-  (when (daemonp)
-    (exec-path-from-shell-initialize)))
+  (use-package exec-path-from-shell
+    :config
+    (when (daemonp)
+      (exec-path-from-shell-initialize)))
 #+END_SRC
 *** Company
 **** Base-company
@@ -219,155 +219,155 @@ I can use the better 'after-init-hook when this loaded from my actual
 .emacs file. While I'm running in portable mode, however,
 `emacs-startup-hook is the best I'm going to be able to do
 #+BEGIN_SRC emacs-lisp
-(use-package company
-  :init
-  (add-hook 'emacs-startup-hook #'global-company-mode))
+  (use-package company
+    :init
+    (add-hook 'emacs-startup-hook #'global-company-mode))
 #+END_SRC
 
 *** Evil
 **** Basic package
- #+BEGIN_SRC emacs-lisp
-(use-package evil
-  :init
-  (setq-default evil-want-C-u-scroll t)
-  :config
-  (setq-default evil-shift-width 2) ;; lets be honest I prefer it this way
-  (setq-default evil-scroll-count 10)
-  (evil-mode 1))
- #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package evil
+    :init
+    (setq-default evil-want-C-u-scroll t)
+    :config
+    (setq-default evil-shift-width 2) ;; lets be honest I prefer it this way
+    (setq-default evil-scroll-count 10)
+    (evil-mode 1))
+#+END_SRC
 
 **** evil-escape
- #+BEGIN_SRC emacs-lisp
-   (use-package evil-escape
-     :config
-     (evil-escape-mode))
- #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-escape
+    :config
+    (evil-escape-mode))
+#+END_SRC
 
 **** evil-nerd-commenter
- evil-nerd-commenter does a few things that comment-line and comment-dwim don't (or at least not without more work):
- - It handles regions and lines interchangeably without issue
- - It keeps the cursor on the line commented
- - It doesn't comment the next line down in visual line mode
- #+BEGIN_SRC emacs-lisp
-   (use-package evil-nerd-commenter)
- #+END_SRC
+evil-nerd-commenter does a few things that comment-line and comment-dwim don't (or at least not without more work):
+- It handles regions and lines interchangeably without issue
+- It keeps the cursor on the line commented
+- It doesn't comment the next line down in visual line mode
+  #+BEGIN_SRC emacs-lisp
+    (use-package evil-nerd-commenter)
+  #+END_SRC
 
 *** Ivy & such
 **** Base Ivy
- #+BEGIN_SRC emacs-lisp
-(use-package ivy
-  :config
-  (ivy-mode)
-  (setq ivy-use-virtual-buffers t)
-  (setq ivy-count-format "(%d/%d) ")
-  (setq enable-recursive-minibuffers t)
-  (setq ivy-use-selectable-prompt t))
- #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package ivy
+    :config
+    (ivy-mode)
+    (setq ivy-use-virtual-buffers t)
+    (setq ivy-count-format "(%d/%d) ")
+    (setq enable-recursive-minibuffers t)
+    (setq ivy-use-selectable-prompt t))
+#+END_SRC
 
 **** Counsel
- #+BEGIN_SRC emacs-lisp
-(use-package counsel
-  :config
-  (setq ivy-re-builders-alist
-    '((counsel-describe-function . ivy--regex-ignore-order)
-      (counsel-describe-variable . ivy--regex-ignore-order)
-      (counsel-M-x . ivy--regex-ignore-order)
-      (t . ivy--regex-plus)))
-  (setcdr (assoc 'counsel-M-x ivy-initial-inputs-alist) "")
-  (setcdr (assoc 'counsel-describe-symbol ivy-initial-inputs-alist) ""))
- #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package counsel
+    :config
+    (setq ivy-re-builders-alist
+          '((counsel-describe-function . ivy--regex-ignore-order)
+            (counsel-describe-variable . ivy--regex-ignore-order)
+            (counsel-M-x . ivy--regex-ignore-order)
+            (t . ivy--regex-plus)))
+    (setcdr (assoc 'counsel-M-x ivy-initial-inputs-alist) "")
+    (setcdr (assoc 'counsel-describe-symbol ivy-initial-inputs-alist) ""))
+#+END_SRC
 
 **** Posframe
- Creates a floating frame for ivy-related searches
- #+BEGIN_SRC emacs-lisp
-   ;; Creates a floating M-x frame
-   (use-package ivy-posframe
-     :config
-     (setq ivy-posframe-display-functions-alist
-	 '((swiper                               . ivy-posframe-display-at-point)
-	   ;;(complete-symbol                    . ivy-posframe-display-at-point)
-	   ;;(t                                  . ivy-posframe-display)
-	   (counsel-M-x                          . ivy-posframe-display-at-frame-center)
-	   (counsel-rg                           . ivy-posframe-display-at-frame-center)
-	   (counsel-ag                           . ivy-posframe-display-at-frame-center)
-	   (counsel-find-file                    . ivy-posframe-display-at-frame-center)
-	   (ivy-switch-buffer                    . ivy-posframe-display-at-frame-center)
-	   (counsel-describe-function            . ivy-posframe-display-at-frame-center)
-	   (counsel-describe-variable            . ivy-posframe-display-at-frame-center)
-	   (counsel-projectile-find-file         . ivy-posframe-display-at-frame-center)
-	   (counsel-projectile-switch-to-buffer  . ivy-posframe-display-at-frame-center)
-	   (counsel-projectile-switch-project    . ivy-posframe-display-at-frame-center)
-	   (counsel-projectile-find-dir          . ivy-posframe-display-at-frame-center)
-	   (counsel-projectile-ag                . ivy-posframe-display-at-frame-center)
-	   (counsel-fzf                          . ivy-posframe-display-at-frame-center)
-	   (counsel-projectile-rg                . ivy-posframe-display-at-frame-center)))
-     (ivy-posframe-mode 1))
- #+END_SRC
+Creates a floating frame for ivy-related searches
+#+BEGIN_SRC emacs-lisp
+  ;; Creates a floating M-x frame
+  (use-package ivy-posframe
+    :config
+    (setq ivy-posframe-display-functions-alist
+          '((swiper                               . ivy-posframe-display-at-point)
+            ;;(complete-symbol                    . ivy-posframe-display-at-point)
+            ;;(t                                  . ivy-posframe-display)
+            (counsel-M-x                          . ivy-posframe-display-at-frame-center)
+            (counsel-rg                           . ivy-posframe-display-at-frame-center)
+            (counsel-ag                           . ivy-posframe-display-at-frame-center)
+            (counsel-find-file                    . ivy-posframe-display-at-frame-center)
+            (ivy-switch-buffer                    . ivy-posframe-display-at-frame-center)
+            (counsel-describe-function            . ivy-posframe-display-at-frame-center)
+            (counsel-describe-variable            . ivy-posframe-display-at-frame-center)
+            (counsel-projectile-find-file         . ivy-posframe-display-at-frame-center)
+            (counsel-projectile-switch-to-buffer  . ivy-posframe-display-at-frame-center)
+            (counsel-projectile-switch-project    . ivy-posframe-display-at-frame-center)
+            (counsel-projectile-find-dir          . ivy-posframe-display-at-frame-center)
+            (counsel-projectile-ag                . ivy-posframe-display-at-frame-center)
+            (counsel-fzf                          . ivy-posframe-display-at-frame-center)
+            (counsel-projectile-rg                . ivy-posframe-display-at-frame-center)))
+    (ivy-posframe-mode 1))
+#+END_SRC
 
 **** smex
 Give me some command history!
 #+BEGIN_SRC emacs-lisp
-(use-package smex
-  :config
-  (unless (boundp smex-initialized-p)
-    (smex-initialize)))
+  (use-package smex
+    :config
+    (unless (boundp smex-initialized-p)
+      (smex-initialize)))
 #+END_SRC
 
 *** Avy
 #+BEGIN_SRC emacs-lisp
-(use-package avy)
+  (use-package avy)
 #+END_SRC
 
 *** Ace
 Link & Window I think
 **** ace-window
 #+BEGIN_SRC emacs-lisp
-(use-package ace-window
-  :config
-  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+  (use-package ace-window
+    :config
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 #+END_SRC
 
 **** link-hint
 ace-link is too complicated for me
 #+BEGIN_SRC emacs-lisp
-(use-package link-hint)
+  (use-package link-hint)
 #+END_SRC
 
 *** Projectile
 **** Base projectile
- #+BEGIN_SRC emacs-lisp
-   (use-package projectile
-     :ensure t
-     :config
-     (setq projectile-completion-system 'ivy)
-     (projectile-mode +1))
- #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :ensure t
+    :config
+    (setq projectile-completion-system 'ivy)
+    (projectile-mode +1))
+#+END_SRC
 
 **** Counsel projectile
- So that I can use posframe here as well
- #+BEGIN_SRC emacs-lisp
-   (use-package counsel-projectile
-     :config
-     (counsel-projectile-mode))
- #+END_SRC
+So that I can use posframe here as well
+#+BEGIN_SRC emacs-lisp
+  (use-package counsel-projectile
+    :config
+    (counsel-projectile-mode))
+#+END_SRC
 
 *** Neotree
- #+BEGIN_SRC emacs-lisp
-(use-package neotree
-  :init
-  (setq neo-show-hidden-files t)
-  ;; confirm to delete files, but not to create them
-  (setq neo-confirm-create-file 'off-p)
-  ;; Use all-the-icons if you're not on a terminal
-  (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
-  :config
-  (defun neotree-projectile ()
-  "Open NeoTree using the project root, focus on current buffer file.
-Borrowed from a config here: https://www.emacswiki.org/emacs/NeoTree.
-If neotree is open, closes it."
-    (interactive)
-    (if (neo-global--window-exists-p)
-        (neotree-toggle)
+#+BEGIN_SRC emacs-lisp
+  (use-package neotree
+    :init
+    (setq neo-show-hidden-files t)
+    ;; confirm to delete files, but not to create them
+    (setq neo-confirm-create-file 'off-p)
+    ;; Use all-the-icons if you're not on a terminal
+    (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+    :config
+    (defun neotree-projectile ()
+      "Open NeoTree using the project root, focus on current buffer file.
+  Borrowed from a config here: https://www.emacswiki.org/emacs/NeoTree.
+  If neotree is open, closes it."
+      (interactive)
+      (if (neo-global--window-exists-p)
+          (neotree-toggle)
         (let ((project-dir (projectile-project-root))
               (file-name (buffer-file-name)))
           (if project-dir
@@ -376,26 +376,26 @@ If neotree is open, closes it."
                 (neotree-find file-name))
             (message "Could not find git project root.")))))
 
-  (add-hook 'neotree-mode-hook
-            (lambda ()
-              (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
-              (define-key evil-normal-state-local-map (kbd "TAB") 'neotree-stretch-toggle)
-              (define-key evil-normal-state-local-map (kbd "gr") 'neotree-refresh)
-              (define-key evil-normal-state-local-map (kbd "c") 'neotree-create-node)
-              (define-key evil-normal-state-local-map (kbd "d") 'neotree-delete-node))))
- #+END_SRC
+    (add-hook 'neotree-mode-hook
+              (lambda ()
+                (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
+                (define-key evil-normal-state-local-map (kbd "TAB") 'neotree-stretch-toggle)
+                (define-key evil-normal-state-local-map (kbd "gr") 'neotree-refresh)
+                (define-key evil-normal-state-local-map (kbd "c") 'neotree-create-node)
+                (define-key evil-normal-state-local-map (kbd "d") 'neotree-delete-node))))
+#+END_SRC
 
 *** Magit
 **** Base Package
- Still much to do here. Need to evil-ify it, for one
+Still much to do here. Need to evil-ify it, for one
 #+BEGIN_SRC emacs-lisp
-(use-package magit
-  :config
-  (setq-default magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1))
-(use-package evil-collection
-  :after evil
-  :config
-  (evil-collection-init 'magit))
+  (use-package magit
+    :config
+    (setq-default magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1))
+  (use-package evil-collection
+    :after evil
+    :config
+    (evil-collection-init 'magit))
 #+END_SRC
 
 **** Magit Customizations
@@ -403,69 +403,83 @@ I don't like the control-oriented confirm/cancel commands when working
 with commit messages. Stealing the key-mapping from spacemacs here
 because I don't use the comma in my day-to-day editing
 #+BEGIN_SRC emacs-lisp
-(defvar with-editor-custom-map (make-sparse-keymap)
-  "I want a with-editor leader that isn't ctrl-oriented")
-(define-key with-editor-custom-map (kbd "k") 'with-editor-cancel)
-(define-key with-editor-custom-map (kbd "c") 'with-editor-finish)
+  (defvar with-editor-custom-map (make-sparse-keymap)
+    "I want a with-editor leader that isn't ctrl-oriented")
+  (define-key with-editor-custom-map (kbd "k") 'with-editor-cancel)
+  (define-key with-editor-custom-map (kbd "c") 'with-editor-finish)
 
-(add-hook 'with-editor-mode-hook
-	  (lambda ()
-	    (define-key evil-motion-state-local-map (kbd ",") with-editor-custom-map)))
+  (add-hook 'with-editor-mode-hook
+            (lambda ()
+              (define-key evil-motion-state-local-map (kbd ",") with-editor-custom-map)))
 #+END_SRC
 
 *** IEdit
 #+BEGIN_SRC emacs-lisp
-(use-package iedit)
-(use-package evil-iedit-state)
+  (use-package iedit)
+  (use-package evil-iedit-state)
 #+END_SRC
 
 *** Dired-hacks
 **** dired-subtree
 Enables a "tree-like" dired navigation
 #+BEGIN_SRC emacs-lisp
-(use-package dired-subtree
-  :config
-  (setq-default dired-subtree-use-backgrounds nil))
+  (use-package dired-subtree
+    :config
+    (setq-default dired-subtree-use-backgrounds nil))
+#+END_SRC
+
+*** Shell Support (Vterm)
+Below I add vterm with some basic settings (requires evil).  Sets the
+environment variable `DOGNAME` as a diagnostic and because I added it
+when I first set this up, so I'm keeping it.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package vterm
+    :config
+    (setq-default vterm-environment
+                  '("DOGNAME=Nellie"))
+    (evil-define-key 'normal vterm-mode-map (kbd "p") 'vterm-yank)
+    (setq-default vterm-max-scrollback 100000))
 #+END_SRC
 
 *** TODO Language Support
- Need to fill this out
- - Major modes that need work:
-     - Python
-     - Typescript/Javascript
-     - Java
-     - C#
-     - Ruby
+Need to fill this out
+- Major modes that need work:
+  - Python
+  - Typescript/Javascript
+  - Java
+  - C#
+  - Ruby
 **** DONE General
 CLOSED: [2020-10-29 Thu 21:25]
 #+BEGIN_SRC emacs-lisp
-(use-package flycheck)
-(use-package lsp-mode)
-(use-package lsp-ui)
+  (use-package flycheck)
+  (use-package lsp-mode)
+  (use-package lsp-ui)
 #+END_SRC
 
 **** DONE Lua
 CLOSED: [2021-12-03 Fri 22:26]
 #+BEGIN_SRC emacs-lisp
-(use-package lua-mode
-  :config
-  (setq-default lua-indent-nested-block-content-align nil))
+  (use-package lua-mode
+    :config
+    (setq-default lua-indent-nested-block-content-align nil))
 #+END_SRC
 **** DONE rust
 CLOSED: [2020-10-29 Thu 22:45]
- #+BEGIN_SRC emacs-lisp
-(use-package rustic)
- #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package rustic)
+#+END_SRC
 
 **** DONE Kotlin
 CLOSED: [2021-01-19 Tue 20:33]
- #+BEGIN_SRC emacs-lisp
-   (use-package kotlin-mode)
- #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package kotlin-mode)
+#+END_SRC
 **** TODO typescript/javascript
 ***** typescript-mode
 #+BEGIN_SRC emacs-lisp
-(use-package typescript-mode)
+  (use-package typescript-mode)
 #+END_SRC
 **** TODO java
 **** TODO python
@@ -476,17 +490,17 @@ CLOSED: [2021-01-19 Tue 20:33]
 CLOSED: [2021-04-03 Sat 19:38]
 Using web-mode for html/mustache/php & variants.
 #+BEGIN_SRC emacs-lisp
-(use-package web-mode
-  :config
-  (setq-default web-mode-markup-indent-offset 2)
-  (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
+  (use-package web-mode
+    :config
+    (setq-default web-mode-markup-indent-offset 2)
+    (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
 #+END_SRC
 *** Hammerspoon integration
 With hammerspoon installed, I have a package, /hs-ivy/, which provides
@@ -502,8 +516,8 @@ stuff should probably live with Ivy, but I need to iterate on this a
 bit (and also likely move from ivy to a different selection front-end)
 
 #+BEGIN_SRC emacs-lisp
-(use-package hs-ivy
-  :ensure nil)
+  (use-package hs-ivy
+    :ensure nil)
 #+END_SRC
 ** TODO Code Editing
 This is where you can set up all the lsp stuff
@@ -518,18 +532,18 @@ Also here is where I should define some common preferences, such as
 
 "Return" sends cursor to the selected reference, kills the xref buffer:
 #+BEGIN_SRC emacs-lisp
-(evil-define-key 'motion xref--xref-buffer-mode-map (kbd "RET")
-  (lambda ()
-    (interactive)
-    (xref-goto-xref 't)))
+  (evil-define-key 'motion xref--xref-buffer-mode-map (kbd "RET")
+    (lambda ()
+      (interactive)
+      (xref-goto-xref 't)))
 #+END_SRC
 
 Make sure that  garbage collection and process reading are up to modern sizes
 #+BEGIN_SRC emacs-lisp
-;; 100mb
-(setq gc-cons-threshold 100000000)
-;; 1mb
-(setq read-process-output-max (* 1024 1024))
+  ;; 100mb
+  (setq gc-cons-threshold 100000000)
+  ;; 1mb
+  (setq read-process-output-max (* 1024 1024))
 #+END_SRC
 
 *** DONE Rust
@@ -537,17 +551,17 @@ CLOSED: [2020-10-29 Thu 21:51]
 Assumes rust-analyzer installed
 
 #+BEGIN_SRC emacs-lisp
-(add-hook 'rust-mode-hook (
-                            lambda ()
-                                ;; Default is 'rust-analyzer because of rustic
-                                (setq rust-indent-offset 2)
-                                (eval (lsp))
-                                (eval (lsp-ui-doc-enable nil))
-                                (eval (lsp-ui-sideline-mode))
-                                (setq lsp-ui-sideline-show-hover 't)
-                                (setq lsp-ui-sideline-show-diagnostics 't)
-                                )
-)
+  (add-hook 'rust-mode-hook (
+                             lambda ()
+                             ;; Default is 'rust-analyzer because of rustic
+                             (setq rust-indent-offset 2)
+                             (eval (lsp))
+                             (eval (lsp-ui-doc-enable nil))
+                             (eval (lsp-ui-sideline-mode))
+                             (setq lsp-ui-sideline-show-hover 't)
+                             (setq lsp-ui-sideline-show-diagnostics 't)
+                             )
+            )
 #+END_SRC
 
 *** DONE Typescript/javascript
@@ -561,58 +575,58 @@ through the install. NPM is a dependency but that's all. Could try
 tide at some point but lsp ui is so nice
 **** typescript
 #+BEGIN_SRC emacs-lisp
-(add-hook 'typescript-mode-hook
-	  (lambda ()
-	    (setq lsp-clients-typescript-server-args '("--stdio" "--tsserver-log-file=/Users/kybarton/ts-ls-log.txt"))
-	    (setq typescript-indent-level 2)
-	    (eval (lsp))
-	    (eval (lsp-ui-doc-enable nil))))
+  (add-hook 'typescript-mode-hook
+            (lambda ()
+              (setq lsp-clients-typescript-server-args '("--stdio" "--tsserver-log-file=/Users/kybarton/ts-ls-log.txt"))
+              (setq typescript-indent-level 2)
+              (eval (lsp))
+              (eval (lsp-ui-doc-enable nil))))
 #+END_SRC
 
 **** javascript
 #+BEGIN_SRC emacs-lisp
-(add-hook 'js-mode-hook
-	  (lambda ()
-	    (setq lsp-clients-typescript-server-args '("--stdio" "--tsserver-log-file=/Users/kybarton/ts-ls-log.txt"))
-	    (eval (lsp))
-	    (eval (lsp-ui-doc-enable nil))))
+  (add-hook 'js-mode-hook
+            (lambda ()
+              (setq lsp-clients-typescript-server-args '("--stdio" "--tsserver-log-file=/Users/kybarton/ts-ls-log.txt"))
+              (eval (lsp))
+              (eval (lsp-ui-doc-enable nil))))
 #+END_SRC
 
 *** DONE Java
 CLOSED: [2020-11-04 Wed 16:51]
 *note* this is really only going to work on emacs 27+. You need native
- json support to handle a java project of any significant size
+json support to handle a java project of any significant size
 #+BEGIN_SRC emacs-lisp
-(use-package lsp-java
-  :config
-  (setq lsp-enable-on-type-formatting nil)
-  (setq lsp-java-format-on-type-enabled nil)
-  (setq lsp-java-vmargs
-	(list
-	 "-noverify"
-	 "-Xmx1G"
-	 "-XX:+UseG1GC"
-	 "-XX:+UseStringDeduplication"
-	 "-javaagent:/Users/kybarton/.lombok/lombok.jar"))) ;; tentatively the default location for lombok I guess
+  (use-package lsp-java
+    :config
+    (setq lsp-enable-on-type-formatting nil)
+    (setq lsp-java-format-on-type-enabled nil)
+    (setq lsp-java-vmargs
+          (list
+           "-noverify"
+           "-Xmx1G"
+           "-XX:+UseG1GC"
+           "-XX:+UseStringDeduplication"
+           "-javaagent:/Users/kybarton/.lombok/lombok.jar"))) ;; tentatively the default location for lombok I guess
 
-(add-hook 'java-mode-hook
-	  (lambda ()
-      (setq indent-tabs-mode nil)
-	    (eval (lsp))
-	    (eval (lsp-ui-doc-enable-nil))
-	    (setq lsp-ui-sideline-show-hover 't)))
+  (add-hook 'java-mode-hook
+            (lambda ()
+              (setq indent-tabs-mode nil)
+              (eval (lsp))
+              (eval (lsp-ui-doc-enable-nil))
+              (setq lsp-ui-sideline-show-hover 't)))
 #+END_SRC
 **** TODO make the location of lombok more generic
 *** C
 Assumes that [[https://github.com/MaskRay/ccls][ccls]] is installed.
 #+BEGIN_SRC emacs-lisp
-(add-hook 'c-mode-hook (
-                            lambda ()
-                                (eval (lsp))
-                                (eval (lsp-ui-doc-enable nil))
-                                (eval (lsp-ui-sideline-mode))
-                                (setq lsp-ui-sideline-show-hover 't)
-                                (setq lsp-ui-sideline-show-diagnostics 't)))
+  (add-hook 'c-mode-hook (
+                          lambda ()
+                          (eval (lsp))
+                          (eval (lsp-ui-doc-enable nil))
+                          (eval (lsp-ui-sideline-mode))
+                          (setq lsp-ui-sideline-show-hover 't)
+                          (setq lsp-ui-sideline-show-diagnostics 't)))
 #+END_SRC
 *** TODO Python
 *** TODO Ruby
@@ -620,17 +634,17 @@ Assumes that [[https://github.com/MaskRay/ccls][ccls]] is installed.
 ** Org
 *THISISBOLD* /this italics/ +this strikethrough+ _this underline_
 #+BEGIN_SRC emacs-lisp
-(setq-default org-startup-indented 't)
-(setq-default org-pretty-entities 't)
-(setq-default org-log-done 'time)
-(setq-default org-startup-with-inline-images 't)
-(setq-default org-return-follows-link t)
-(evil-define-key 'normal org-mode-map (kbd "t") 'org-todo)
-(evil-define-key 'normal org-mode-map (kbd "<tab>") 'org-cycle)
-;; Don't evil-auto-indent in org mode pls
-(add-hook 'org-mode-hook (
-			  lambda ()
-				 (setq evil-auto-indent nil)))
+  (setq-default org-startup-indented 't)
+  (setq-default org-pretty-entities 't)
+  (setq-default org-log-done 'time)
+  (setq-default org-startup-with-inline-images 't)
+  (setq-default org-return-follows-link t)
+  (evil-define-key 'normal org-mode-map (kbd "t") 'org-todo)
+  (evil-define-key 'normal org-mode-map (kbd "<tab>") 'org-cycle)
+  ;; Don't evil-auto-indent in org mode pls
+  (add-hook 'org-mode-hook (
+                            lambda ()
+                            (setq evil-auto-indent nil)))
 #+END_SRC
 *** Org-roam
 Sets up the org-roam directory and some encryption preferences. Org
@@ -640,43 +654,43 @@ could be more sophisticated here once I have a comp-specific config
 solution set up.
 
 #+BEGIN_SRC emacs-lisp
-(setq epa-file-encrypt-to '("kjbarton4@gmail.com"))
-;; This should be ok as nil once `epa-file-encrypt-to' is filled, but
-;; there is a bug. See https://superuser.com/a/1561209
-(setq epa-file-select-keys 1)
-(use-package org-roam
-  :config
-  (setq org-roam-directory
-        (file-truename "/Users/kylebarton/Dropbox/Local/Org/org-roam"))
-  ;; use gpg file extension to force encryption
-  (setq org-roam-capture-templates
-        '(("d" "default" plain "%?"
-            :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org.gpg"
-                              "#+title: ${title}")
-            :unnarrowed t)))
-  (org-roam-db-autosync-mode)
+  (setq epa-file-encrypt-to '("kjbarton4@gmail.com"))
+  ;; This should be ok as nil once `epa-file-encrypt-to' is filled, but
+  ;; there is a bug. See https://superuser.com/a/1561209
+  (setq epa-file-select-keys 1)
+  (use-package org-roam
+    :config
+    (setq org-roam-directory
+          (file-truename "/Users/kylebarton/Dropbox/Local/Org/org-roam"))
+    ;; use gpg file extension to force encryption
+    (setq org-roam-capture-templates
+          '(("d" "default" plain "%?"
+             :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org.gpg"
+                                "#+title: ${title}")
+             :unnarrowed t)))
+    (org-roam-db-autosync-mode)
 
-  ;; set up some dailies details
-  (setq org-roam-dailies-directory "daily/")
+    ;; set up some dailies details
+    (setq org-roam-dailies-directory "daily/")
 
-  (setq org-roam-dailies-capture-templates
-        '(("d" "default" entry
-            "* %?"
-            :target (file+head "%<%Y-%m-%d>.org.gpg"
-                              "#+title: %<%Y-%m-%d>\n"))
-          ("t" "timestamped note" entry
-            "* %<%H>:%<%M>\n %?"
-            :target (file+head+olp "%<%Y-%m-%d>.org.gpg"
-                              "#+title: %<%Y-%m-%d>\n"
-                              ("Minutes"))))))
+    (setq org-roam-dailies-capture-templates
+          '(("d" "default" entry
+             "* %?"
+             :target (file+head "%<%Y-%m-%d>.org.gpg"
+                                "#+title: %<%Y-%m-%d>\n"))
+            ("t" "timestamped note" entry
+             "* %<%H>:%<%M>\n %?"
+             :target (file+head+olp "%<%Y-%m-%d>.org.gpg"
+                                    "#+title: %<%Y-%m-%d>\n"
+                                    ("Minutes"))))))
 #+END_SRC
 
 Adds my custom `hs-org-capture` package for taking capture notes using
 hammerspoon shortcuts. Currently, relies on `org-roam` and `s`
 
 #+BEGIN_SRC emacs-lisp
-(use-package hs-org-capture
-  :ensure nil)
+  (use-package hs-org-capture
+    :ensure nil)
 #+END_SRC
 
 ** Key Maps
@@ -686,147 +700,147 @@ don't necessarily have a good organization right now
 **** ansi-term
 Enable some pasting
 #+BEGIN_SRC emacs-lisp
-(evil-define-key 'normal term-raw-map (kbd "p") 'term-paste)
+  (evil-define-key 'normal term-raw-map (kbd "p") 'term-paste)
 #+END_SRC
 
 *** Sub-maps
 **** Help Functions
- #+BEGIN_SRC emacs-lisp
-   (defvar help-map (make-sparse-keymap)
-     "Help & describe functions. General documentation")
-   (define-key help-map (kbd "f") 'counsel-describe-function)
-   (define-key help-map (kbd "v") 'counsel-describe-variable)
-   (define-key help-map (kbd "k") 'describe-key)
- #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (defvar help-map (make-sparse-keymap)
+    "Help & describe functions. General documentation")
+  (define-key help-map (kbd "f") 'counsel-describe-function)
+  (define-key help-map (kbd "v") 'counsel-describe-variable)
+  (define-key help-map (kbd "k") 'describe-key)
+#+END_SRC
 
 **** Buffer Manipulation
- #+BEGIN_SRC emacs-lisp
-(defvar buffer-map (make-sparse-keymap)
+#+BEGIN_SRC emacs-lisp
+  (defvar buffer-map (make-sparse-keymap)
     "Buffer manipulation")
-(define-key buffer-map (kbd "d") 'kill-buffer-and-window)
-(define-key buffer-map (kbd "b") 'ivy-switch-buffer)
-(define-key buffer-map (kbd "s")
-  (lambda ()
-    (interactive)
-    (switch-to-buffer "*scratch*")))
-(define-key buffer-map (kbd "e")
-  (lambda ()
-    (interactive)
-    (find-file (file-truename (concat (getenv "HOME") "/.emacs")))))
- #+END_SRC
+  (define-key buffer-map (kbd "d") 'kill-buffer-and-window)
+  (define-key buffer-map (kbd "b") 'ivy-switch-buffer)
+  (define-key buffer-map (kbd "s")
+              (lambda ()
+                (interactive)
+                (switch-to-buffer "*scratch*")))
+  (define-key buffer-map (kbd "e")
+              (lambda ()
+                (interactive)
+                (find-file (file-truename (concat (getenv "HOME") "/.emacs")))))
+#+END_SRC
 
 **** Window Manipulation
- #+BEGIN_SRC emacs-lisp
-(defvar window-map (make-sparse-keymap)
-  "Window manipulation")
-(define-key window-map (kbd "k") 'windmove-up)
-(define-key window-map (kbd "j") 'windmove-down)
-(define-key window-map (kbd "h") 'windmove-left)
-(define-key window-map (kbd "l") 'windmove-right)
-(define-key window-map (kbd "d") 'delete-window)
-(define-key window-map (kbd "D") 'ace-delete-window)
-(define-key window-map (kbd "w") 'ace-select-window)
-(define-key window-map (kbd "=") 'balance-windows)
-(define-key window-map (kbd "r") 'kjb/cycle-window-size)
- #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (defvar window-map (make-sparse-keymap)
+    "Window manipulation")
+  (define-key window-map (kbd "k") 'windmove-up)
+  (define-key window-map (kbd "j") 'windmove-down)
+  (define-key window-map (kbd "h") 'windmove-left)
+  (define-key window-map (kbd "l") 'windmove-right)
+  (define-key window-map (kbd "d") 'delete-window)
+  (define-key window-map (kbd "D") 'ace-delete-window)
+  (define-key window-map (kbd "w") 'ace-select-window)
+  (define-key window-map (kbd "=") 'balance-windows)
+  (define-key window-map (kbd "r") 'kjb/cycle-window-size)
+#+END_SRC
 
 **** Execution Map
 #+BEGIN_SRC emacs-lisp
-(defvar execution-map (make-sparse-keymap)
-  "Common executions")
-(define-key execution-map (kbd "e") 'eshell)
-(define-key execution-map (kbd "s") 'async-shell-command)
-(define-key execution-map (kbd "b") 'eval-buffer)
-(define-key execution-map (kbd "r") 'eval-region)
-(define-key execution-map (kbd "ps") 'projectile-run-async-shell-command-in-root)
+  (defvar execution-map (make-sparse-keymap)
+    "Common executions")
+  (define-key execution-map (kbd "e") 'eshell)
+  (define-key execution-map (kbd "s") 'async-shell-command)
+  (define-key execution-map (kbd "b") 'eval-buffer)
+  (define-key execution-map (kbd "r") 'eval-region)
+  (define-key execution-map (kbd "ps") 'projectile-run-async-shell-command-in-root)
 #+END_SRC
 
 **** File Manipulation
- #+BEGIN_SRC emacs-lisp
-(defvar file-map (make-sparse-keymap)
-  "File manipulation")
-(define-key file-map (kbd "s") 'save-buffer)
-(define-key file-map (kbd "f") 'counsel-find-file)
- #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (defvar file-map (make-sparse-keymap)
+    "File manipulation")
+  (define-key file-map (kbd "s") 'save-buffer)
+  (define-key file-map (kbd "f") 'counsel-find-file)
+#+END_SRC
 
 **** Dired Maps
 ***** Dired Activation/Control
- #+BEGIN_SRC emacs-lisp
-   (defvar dired-activate-map (make-sparse-keymap)
-     "Activating dired in various locations")
-   (define-key dired-activate-map (kbd ".") ;; open dired in current dir
-     (lambda ()
-       (interactive)
-       (dired default-directory)))
-   (define-key dired-activate-map (kbd "p") ;; open dired in project dir
-     (lambda ()
-       (interactive)
-       (dired (projectile-project-root))))
+#+BEGIN_SRC emacs-lisp
+  (defvar dired-activate-map (make-sparse-keymap)
+    "Activating dired in various locations")
+  (define-key dired-activate-map (kbd ".") ;; open dired in current dir
+              (lambda ()
+                (interactive)
+                (dired default-directory)))
+  (define-key dired-activate-map (kbd "p") ;; open dired in project dir
+              (lambda ()
+                (interactive)
+                (dired (projectile-project-root))))
   (define-key dired-activate-map (kbd "~") ;; open dired in project dir
-      (lambda ()
-        (interactive)
-        (dired (getenv "HOME"))))
- #+END_SRC
+              (lambda ()
+                (interactive)
+                (dired (getenv "HOME"))))
+#+END_SRC
 
 ***** Dired Mode
- Simple function to retreat out of a dired subdir
- #+BEGIN_SRC emacs-lisp
-   ;; kills subdir, puts cursor on its location in parent subdir
-   (defun dired-retreat-from-subdir ()
-     (interactive)
-     (let ((parent-dir (dired-current-directory)))
-       (dired-subtree-remove)
-       (dired-goto-file parent-dir)))
- #+END_SRC
+Simple function to retreat out of a dired subdir
+#+BEGIN_SRC emacs-lisp
+  ;; kills subdir, puts cursor on its location in parent subdir
+  (defun dired-retreat-from-subdir ()
+    (interactive)
+    (let ((parent-dir (dired-current-directory)))
+      (dired-subtree-remove)
+      (dired-goto-file parent-dir)))
+#+END_SRC
 
 dwim function so that I keep a dired buffer around as needed
 #+BEGIN_SRC emacs-lisp
-(defun dired-find-file-dwim ()
-  "Dired-find-file for actual files, and dired-find-alternate-file for
-directories. This way, I don't litter with a bunch of dired buffers,
-but I preserve one when I visit a file"
-  (interactive)
-  (let
-      (
-       (point-file (dired-get-file-for-visit))
-       )
-    (if
-	(file-directory-p point-file)
-	;; I use dired functions instead of find-file
-	;; or find-alternate-file directly, because there is some
-	;; safety logic on dired's side that I don't want to recreate
-	(dired-find-alternate-file)
-	(dired-find-file))
-  ))
+  (defun dired-find-file-dwim ()
+    "Dired-find-file for actual files, and dired-find-alternate-file for
+  directories. This way, I don't litter with a bunch of dired buffers,
+  but I preserve one when I visit a file"
+    (interactive)
+    (let
+        (
+         (point-file (dired-get-file-for-visit))
+         )
+      (if
+          (file-directory-p point-file)
+          ;; I use dired functions instead of find-file
+          ;; or find-alternate-file directly, because there is some
+          ;; safety logic on dired's side that I don't want to recreate
+          (dired-find-alternate-file)
+        (dired-find-file))
+      ))
 #+END_SRC
 
-  I hate pretty much all dired defaults.
-  Maybe try to deactivate the default keymap somehow?
-  Overall keybindings look good here, but I should change this to match my mental model:
-  I'd like ONE dired buffer, filled with subdirs as needed. Quick command (SPC-d-d) sends
-  me back to that buffer. RET is mapped to opening a subdir for dirs, and opening a file (non-alternate)
-  for files. This could make dired my central "shell" command center if I can create a command to run
-  a shell command from 'dired-current-directory
- #+BEGIN_SRC emacs-lisp
-   (put 'dired-find-alternate-file 'disabled nil) ;; why on earth is this disabled?
-   (define-key dired-mode-map (kbd "RET") 'dired-find-file-dwim)
-   ;; Go up a dir unless you're in a subdir, in which case collapse it
-   (define-key dired-mode-map (kbd "u")
-     (lambda ()
-       (interactive)
-       (if (equal (dired-current-directory) (expand-file-name default-directory))
-	 ;; we're at the top level, go to ".."
-	 (find-alternate-file "..")
-	 ;; else, we're in a subdir, so close it
-	 (dired-retreat-from-subdir))))
-   (define-key dired-mode-map (kbd "n") 'evil-search-next)
-   (define-key dired-mode-map (kbd "w") 'evil-forward-word-begin)
-   (define-key dired-mode-map (kbd "v") 'evil-visual-char)
-   (define-key dired-mode-map (kbd "x") 'dired-retreat-from-subdir)
-   (define-key dired-mode-map (kbd "TAB") 'dired-subtree-insert)
-   (define-key dired-mode-map (kbd "$") 'evil-end-of-line)
-   (define-key dired-mode-map (kbd "g") 'revert-buffer)
- #+END_SRC
+I hate pretty much all dired defaults.
+Maybe try to deactivate the default keymap somehow?
+Overall keybindings look good here, but I should change this to match my mental model:
+I'd like ONE dired buffer, filled with subdirs as needed. Quick command (SPC-d-d) sends
+me back to that buffer. RET is mapped to opening a subdir for dirs, and opening a file (non-alternate)
+for files. This could make dired my central "shell" command center if I can create a command to run
+a shell command from 'dired-current-directory
+#+BEGIN_SRC emacs-lisp
+  (put 'dired-find-alternate-file 'disabled nil) ;; why on earth is this disabled?
+  (define-key dired-mode-map (kbd "RET") 'dired-find-file-dwim)
+  ;; Go up a dir unless you're in a subdir, in which case collapse it
+  (define-key dired-mode-map (kbd "u")
+              (lambda ()
+                (interactive)
+                (if (equal (dired-current-directory) (expand-file-name default-directory))
+                    ;; we're at the top level, go to ".."
+                    (find-alternate-file "..")
+                  ;; else, we're in a subdir, so close it
+                  (dired-retreat-from-subdir))))
+  (define-key dired-mode-map (kbd "n") 'evil-search-next)
+  (define-key dired-mode-map (kbd "w") 'evil-forward-word-begin)
+  (define-key dired-mode-map (kbd "v") 'evil-visual-char)
+  (define-key dired-mode-map (kbd "x") 'dired-retreat-from-subdir)
+  (define-key dired-mode-map (kbd "TAB") 'dired-subtree-insert)
+  (define-key dired-mode-map (kbd "$") 'evil-end-of-line)
+  (define-key dired-mode-map (kbd "g") 'revert-buffer)
+#+END_SRC
 
 **** Search
 Note: Probably best to write this stuff in init.el, and move over afterwards
@@ -834,11 +848,11 @@ Intense filesystem/symbol searches here.
 - Assumes ag installed
 - Assumes fzf installed
 #+BEGIN_SRC emacs-lisp
-(defvar search-map (make-sparse-keymap)
-  "Search utilities")
-(define-key search-map (kbd "f") 'counsel-fzf)
-(define-key search-map (kbd "s") 'counsel-ag)
-(define-key search-map (kbd "e") 'evil-iedit-state/iedit-mode)
+  (defvar search-map (make-sparse-keymap)
+    "Search utilities")
+  (define-key search-map (kbd "f") 'counsel-fzf)
+  (define-key search-map (kbd "s") 'counsel-ag)
+  (define-key search-map (kbd "e") 'evil-iedit-state/iedit-mode)
 #+END_SRC
 
 **** Project Manipulation
@@ -852,30 +866,30 @@ does with counsel-ag.
 tries to map things behind "s". No effect on my workflow for now, but
 there error will happen everytime I reload config
 #+BEGIN_SRC emacs-lisp
-(define-key projectile-command-map (kbd "t") 'neotree-projectile)
-(define-key projectile-command-map (kbd "s")
-  (lambda ()
-    (interactive)
-    (counsel-ag nil (projectile-project-root))))
+  (define-key projectile-command-map (kbd "t") 'neotree-projectile)
+  (define-key projectile-command-map (kbd "s")
+              (lambda ()
+                (interactive)
+                (counsel-ag nil (projectile-project-root))))
 #+END_SRC
 
 **** Jump Map
 Jumping around buffers
 #+BEGIN_SRC emacs-lisp
-(defvar jump-map (make-sparse-keymap)
-  "Keys for jumping around places, primarily with avy")
+  (defvar jump-map (make-sparse-keymap)
+    "Keys for jumping around places, primarily with avy")
 
-(define-key jump-map (kbd "l") 'avy-goto-line)
+  (define-key jump-map (kbd "l") 'avy-goto-line)
 #+END_SRC
 
 **** Link Map
 Opening & copying links
 #+BEGIN_SRC emacs-lisp
-(defvar link-map (make-sparse-keymap)
-  "Utilities for opening links")
+  (defvar link-map (make-sparse-keymap)
+    "Utilities for opening links")
 
-(define-key link-map (kbd "o") 'link-hint-open-link)
-(define-key link-map (kbd "c") 'link-hint-copy-link)
+  (define-key link-map (kbd "o") 'link-hint-open-link)
+  (define-key link-map (kbd "c") 'link-hint-copy-link)
 #+END_SRC
 
 **** Language Map
@@ -887,65 +901,65 @@ be to define generic functions, e.g. 'rename-impl, which would wrap
 the dependency on lsp and define backup functions for situations where
 lsp-mode is not active
 #+BEGIN_SRC emacs-lisp
-(defvar language-map (make-sparse-keymap)
-  "Mappings for various language/lsp bindings and manipulation")
+  (defvar language-map (make-sparse-keymap)
+    "Mappings for various language/lsp bindings and manipulation")
 
-(define-key language-map (kbd "rr") 'lsp-rename)
-(define-key language-map (kbd "gr") 'lsp-find-references)
-(define-key language-map (kbd "aa") 'lsp-execute-code-action)
-(define-key language-map (kbd "fp") 'fill-paragraph)
+  (define-key language-map (kbd "rr") 'lsp-rename)
+  (define-key language-map (kbd "gr") 'lsp-find-references)
+  (define-key language-map (kbd "aa") 'lsp-execute-code-action)
+  (define-key language-map (kbd "fp") 'fill-paragraph)
 #+END_SRC
 **** Knowledge Map
 Submap for knowledge-base & personal organization
 commands. Importantly, this submap powers commands for org-roam.
 
 #+BEGIN_SRC emacs-lisp
-(defvar knowledge-map (make-sparse-keymap)
-  "Mappings for various kb & org-roam bindings")
+  (defvar knowledge-map (make-sparse-keymap)
+    "Mappings for various kb & org-roam bindings")
 
-(define-key knowledge-map (kbd "c") 'org-roam-capture)
-(define-key knowledge-map (kbd "f") 'org-roam-node-find)
-(define-key knowledge-map (kbd "i") 'org-roam-node-insert)
-(define-key knowledge-map (kbd "g") 'org-open-at-point)
-(define-key knowledge-map (kbd "dt") 'org-roam-dailies-goto-today)
-(define-key knowledge-map (kbd "dc") 'org-roam-dailies-capture-today)
-(define-key knowledge-map (kbd "dd") 'org-roam-dailies-goto-date)
+  (define-key knowledge-map (kbd "c") 'org-roam-capture)
+  (define-key knowledge-map (kbd "f") 'org-roam-node-find)
+  (define-key knowledge-map (kbd "i") 'org-roam-node-insert)
+  (define-key knowledge-map (kbd "g") 'org-open-at-point)
+  (define-key knowledge-map (kbd "dt") 'org-roam-dailies-goto-today)
+  (define-key knowledge-map (kbd "dc") 'org-roam-dailies-capture-today)
+  (define-key knowledge-map (kbd "dd") 'org-roam-dailies-goto-date)
 
 #+END_SRC
 
 *** Top-level-map
 It needs to happen after submaps are defined
 #+BEGIN_SRC emacs-lisp
-(defvar top-level-map (make-sparse-keymap)
-"Top level map to send functions to delegate maps")
-;; direct commands (no need for a submap here yet
-(define-key top-level-map (kbd "SPC") 'counsel-M-x)
-(define-key top-level-map (kbd "cl") 'evilnc-comment-or-uncomment-lines)
-(define-key top-level-map (kbd "u") 'universal-argument)
-;; To submaps
-(define-key top-level-map (kbd "e") execution-map)
-(define-key top-level-map (kbd "w") window-map)
-(define-key top-level-map (kbd "f") file-map)
-(define-key top-level-map (kbd "b") buffer-map)
-(define-key top-level-map (kbd "h") help-map)
-(define-key top-level-map (kbd "d") dired-activate-map)
-(define-key top-level-map (kbd "s") search-map)
-(define-key top-level-map (kbd "j") jump-map)
-(define-key top-level-map (kbd "x") link-map)
-(define-key top-level-map (kbd "l") language-map)
-(define-key top-level-map (kbd "k") knowledge-map)
-;; Projectile has its own submap
-(define-key top-level-map (kbd "p") projectile-command-map)
+  (defvar top-level-map (make-sparse-keymap)
+    "Top level map to send functions to delegate maps")
+  ;; direct commands (no need for a submap here yet
+  (define-key top-level-map (kbd "SPC") 'counsel-M-x)
+  (define-key top-level-map (kbd "cl") 'evilnc-comment-or-uncomment-lines)
+  (define-key top-level-map (kbd "u") 'universal-argument)
+  ;; To submaps
+  (define-key top-level-map (kbd "e") execution-map)
+  (define-key top-level-map (kbd "w") window-map)
+  (define-key top-level-map (kbd "f") file-map)
+  (define-key top-level-map (kbd "b") buffer-map)
+  (define-key top-level-map (kbd "h") help-map)
+  (define-key top-level-map (kbd "d") dired-activate-map)
+  (define-key top-level-map (kbd "s") search-map)
+  (define-key top-level-map (kbd "j") jump-map)
+  (define-key top-level-map (kbd "x") link-map)
+  (define-key top-level-map (kbd "l") language-map)
+  (define-key top-level-map (kbd "k") knowledge-map)
+  ;; Projectile has its own submap
+  (define-key top-level-map (kbd "p") projectile-command-map)
 
-(evil-define-key 'motion 'global (kbd "SPC") top-level-map)
-;; Info mode; another special one
-(evil-define-key 'motion Info-mode-map (kbd "SPC") top-level-map)
-;; this is a problem from an organization standpoint. It should live in the dired space
-(define-key dired-mode-map (kbd "SPC") top-level-map)
-;; same with magit
-(define-key magit-status-mode-map (kbd "SPC") top-level-map)
-;; This jump-back command gels nicely with "gd"
-(evil-define-key 'motion 'global (kbd "gb") 'evil-jump-backward)
+  (evil-define-key 'motion 'global (kbd "SPC") top-level-map)
+  ;; Info mode; another special one
+  (evil-define-key 'motion Info-mode-map (kbd "SPC") top-level-map)
+  ;; this is a problem from an organization standpoint. It should live in the dired space
+  (define-key dired-mode-map (kbd "SPC") top-level-map)
+  ;; same with magit
+  (define-key magit-status-mode-map (kbd "SPC") top-level-map)
+  ;; This jump-back command gels nicely with "gd"
+  (evil-define-key 'motion 'global (kbd "gb") 'evil-jump-backward)
 #+END_SRC
 
 ** Further work needed
