@@ -720,6 +720,25 @@ hammerspoon shortcuts. Currently, relies on `org-roam` and `s`
     :ensure nil)
 #+END_SRC
 
+Adds advice to `org-id-find` to first search the org-roam db with
+`org-roam-id-find`. This improves efficiency when resolving remote org
+references outside of the scope of org-roam -- in particular, this
+allows me to reference custom IDs in tables in different org-roam
+files, which enables my spreadsheeting system for family finances.
+
+#+BEGIN_SRC emacs-lisp
+  (defun kjb/org-id-find--around-advice (orig-fun &rest args)
+    "Advice added to `org-id-find'. If the file location can be found
+  with `org-roam-id-find', return that instead. Else, fall through
+  to the traditional `org-id-find' function application"
+    (let ((result (apply #'org-roam-id-find args)))
+      (if (not result)
+          (apply orig-fun args)
+        result)))
+
+  (advice-add 'org-id-find :around #'kjb/org-id-find--around-advice)
+#+END_SRC
+
 ** Key Maps
 *** Misc
 Place for me to append key-mappings for various minor modes, which
