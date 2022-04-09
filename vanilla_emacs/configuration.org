@@ -442,6 +442,33 @@ when I first set this up, so I'm keeping it.
     (setq-default vterm-max-scrollback 100000))
 #+END_SRC
 
+Additionally, here is a dwim function (still very much a work in
+progress) aimed at supporting my terminal-map (see keymappings)
+
+#+BEGIN_SRC emacs-lisp
+  (defun kjb/vterm-dwim (&optional hint)
+    "Vterm dwim function. Takes a substring hint:
+
+  = If the substring matches an existing vterm buffers, open it.
+
+  - If the substring doesn't match an existing buffer, create it
+    with that name
+
+  - If the substring matches multiple vterm buffers, return them as
+    a list of their buffer names."
+    (interactive)
+    (if (stringp hint)
+        (let ((buffer-name
+               (car-safe (member hint (mapcar #'buffer-name (buffer-list))))))
+          ;; (message buffer-names)
+          (message hint)
+          (if (stringp buffer-name)
+              (switch-to-buffer buffer-name)
+            (vterm hint)))))
+
+
+#+END_SRC
+
 *** TODO Language Support
 Need to fill this out
 - Major modes that need work:
@@ -927,6 +954,32 @@ commands. Importantly, this submap powers commands for org-roam.
 
 #+END_SRC
 
+**** Terminal Map
+Submap for terminal-emulation commands, largely vterm. See details of
+the dwim function in the vterm section.
+
+#+BEGIN_SRC emacs-lisp
+  (defvar terminal-map (make-sparse-keymap)
+    "Mappings for various kb & org-roam bindings")
+
+  (define-key terminal-map (kbd "1")
+              (lambda ()
+                (interactive)
+                (kjb/vterm-dwim "VTERM_1")))
+  (define-key terminal-map (kbd "2")
+              (lambda ()
+                (interactive)
+                (kjb/vterm-dwim "VTERM_2")))
+  (define-key terminal-map (kbd "3")
+              (lambda ()
+                (interactive)
+                (kjb/vterm-dwim "VTERM_3")))
+  (define-key terminal-map (kbd "4")
+              (lambda ()
+                (interactive)
+                (kjb/vterm-dwim "VTERM_4")))
+#+END_SRC
+
 *** Top-level-map
 It needs to happen after submaps are defined
 #+BEGIN_SRC emacs-lisp
@@ -948,6 +1001,7 @@ It needs to happen after submaps are defined
   (define-key top-level-map (kbd "x") link-map)
   (define-key top-level-map (kbd "l") language-map)
   (define-key top-level-map (kbd "k") knowledge-map)
+  (define-key top-level-map (kbd "t") terminal-map)
   ;; Projectile has its own submap
   (define-key top-level-map (kbd "p") projectile-command-map)
 
