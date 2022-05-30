@@ -661,17 +661,20 @@ Assumes that [[https://github.com/MaskRay/ccls][ccls]] is installed.
 ** Org
 *THISISBOLD* /this italics/ +this strikethrough+ _this underline_
 #+BEGIN_SRC emacs-lisp
-  (setq-default org-startup-indented 't)
-  (setq-default org-pretty-entities 't)
-  (setq-default org-log-done 'time)
-  (setq-default org-startup-with-inline-images 't)
-  (setq-default org-return-follows-link t)
-  (evil-define-key 'normal org-mode-map (kbd "t") 'org-todo)
-  (evil-define-key 'normal org-mode-map (kbd "<tab>") 'org-cycle)
-  ;; Don't evil-auto-indent in org mode pls
-  (add-hook 'org-mode-hook (
-                            lambda ()
-                            (setq evil-auto-indent nil)))
+    (setq-default org-startup-indented 't)
+    (setq-default org-pretty-entities 't)
+    (setq-default org-log-done 'time)
+    (setq-default org-startup-with-inline-images 't)
+    ;; Make sure you can use `attr_html: :width height/width'
+    ;; to prevent giant images from overhwelming the buffer.
+    (setq-default org-image-actual-width nil)
+    (setq-default org-return-follows-link t)
+    (evil-define-key 'normal org-mode-map (kbd "t") 'org-todo)
+    (evil-define-key 'normal org-mode-map (kbd "<tab>") 'org-cycle)
+    ;; Don't evil-auto-indent in org mode pls
+    (add-hook 'org-mode-hook (
+                              lambda ()
+                              (setq evil-auto-indent nil)))
 #+END_SRC
 *** Org-roam
 Sets up the org-roam directory and some encryption preferences. Org
