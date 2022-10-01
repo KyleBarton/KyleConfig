@@ -233,6 +233,7 @@ I can use the better 'after-init-hook when this loaded from my actual
     :config
     (setq-default evil-shift-width 2) ;; lets be honest I prefer it this way
     (setq-default evil-scroll-count 10)
+    (evil-set-initial-state 'Info-mode 'emacs) ;; best to use native emacs bindings in Info-mode
     (evil-mode 1))
 #+END_SRC
 
@@ -313,6 +314,25 @@ Give me some command history!
       (smex-initialize)))
 #+END_SRC
 
+*** SMOCE
+Building up a SMOCE stack (or VMOCE, depending if I end up using
+vertico instead), with the hope that this eventually replaces Ivy so
+that I'm using built-in completion functions.
+**** Selectrum
+Selectrum provides a completing-read function.
+#+BEGIN_SRC emacs-lisp
+  (use-package selectrum
+    :config
+    (selectrum-mode +1))
+#+END_SRC
+**** Orderless
+Provides a "completion-style" that is really excellent for substring search.
+#+BEGIN_SRC emacs-lisp
+  (use-package orderless
+    :config
+    (setq completion-styles (append '(orderless) completion-styles))
+    (setq completion-category-overrides '((file (styles basic partial-completion)))))
+#+END_SRC
 *** Avy
 #+BEGIN_SRC emacs-lisp
   (use-package avy)
@@ -898,12 +918,17 @@ Note: Probably best to write this stuff in init.el, and move over afterwards
 Intense filesystem/symbol searches here.
 - Assumes ag installed
 - Assumes fzf installed
+
+
+*Note*: space-s-r for `replace-string` is probably a little
+ basic. Text operations like this need some tuning.
 #+BEGIN_SRC emacs-lisp
   (defvar search-map (make-sparse-keymap)
     "Search utilities")
   (define-key search-map (kbd "f") 'counsel-fzf)
   (define-key search-map (kbd "s") 'counsel-ag)
   (define-key search-map (kbd "e") 'evil-iedit-state/iedit-mode)
+  (define-key search-map (kbd "r") 'replace-string)
 #+END_SRC
 
 **** Project Manipulation
