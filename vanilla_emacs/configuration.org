@@ -146,6 +146,17 @@ eshell in the projectile directory). Well, TODO I guess.
 
   (advice-add 'eshell :around #'kjb/eshell-init-on-default-directory)
 #+END_SRC
+*** Buffers
+**** Sort by major mode
+#+BEGIN_SRC emacs-lisp
+  (defun kjb/buffers-with-major-mode (mode)
+    "Returns a sequence of buffers filtered by the provide major mode."
+    (seq-filter
+     (lambda (buf)
+       (with-current-buffer buf
+         (eq (symbol-value 'major-mode) mode)))
+     (buffer-list)))
+#+END_SRC
 ** Packages
 *** Use-package
 **** Initialize package with correct archives
@@ -175,10 +186,10 @@ Everything after this should use use-package for management
 **** Spacemacs
 Still haven't found a dark mode better than spacemacs
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package spacemacs-theme
-  ;;   :defer t
-  ;;   :init
-  ;;   (load-theme 'spacemacs-dark t))
+  (use-package spacemacs-theme
+    :defer t
+    :init
+    (load-theme 'spacemacs-dark t))
 #+END_SRC
 **** Poet (Inactive)
 Keeping poet on ice for now.
@@ -221,7 +232,10 @@ I can use the better 'after-init-hook when this loaded from my actual
 #+BEGIN_SRC emacs-lisp
   (use-package company
     :init
-    (add-hook 'emacs-startup-hook #'global-company-mode))
+    (add-hook 'emacs-startup-hook #'global-company-mode)
+    :config
+    ;; Maintain case sensitivity for plaintext autocompletions.
+    (setq company-dabbrev-downcase nil))
 #+END_SRC
 
 *** Evil
@@ -325,6 +339,21 @@ Selectrum provides a completing-read function.
     :config
     (selectrum-mode +1))
 #+END_SRC
+**** Marginalia
+Haven't really done much beyond the base configuration here. Lots of
+potential to customize when I have time. Works OOTB with Ivy!
+#+BEGIN_SRC emacs-lisp
+(use-package marginalia
+  :bind (:map minibuffer-local-map
+         ("s-a" . marginalia-cycle))
+
+  :init
+
+  ;; Must be in the :init section of use-package such that the mode
+  ;; gets enabled right away. Note that this forces loading the
+  ;; package.
+  (marginalia-mode))
+#+END_SRC
 **** Orderless
 Provides a "completion-style" that is really excellent for substring search.
 #+BEGIN_SRC emacs-lisp
@@ -333,6 +362,68 @@ Provides a "completion-style" that is really excellent for substring search.
     (setq completion-styles (append '(orderless) completion-styles))
     (setq completion-category-overrides '((file (styles basic partial-completion)))))
 #+END_SRC
+**** Consult
+This is the most high-level, integrated part of the stack. Provides
+individual functions (like `consult-buffer`) which uses
+completing-read in order to narrow the search, and supports live
+preview (yay!). I'm not doing /any/ customization right now, just
+playing with the functions raw, but there are already some things I
+should consider iterating on:
+- Live preview in a more controlled area - maybe a floating window?
+- Better color coding if it's available to me.
+#+BEGIN_SRC emacs-lisp
+(use-package consult)
+;; Recommended if also using embark, which I am.
+(use-package consult-embark)
+#+END_SRC
+***** Buffers
+Various buffer-related custom sources for consult.
+
+*Vterm-mode buffers*
+#+BEGIN_SRC emacs-lisp
+(defvar kjb/consult--vterm-buffer-source
+  `(:name  "Vterm Buffers"
+	   :narrow ?v
+	   :category buffer
+	   :face consult-buffer
+	   :action ,#'consult--buffer-action
+	   :state ,#'consult--buffer-state
+	   :items (closure
+		      (t)
+		      nil
+		    (mapcar #'buffer-name
+			    (kjb/buffers-with-major-mode 'vterm-mode)))))
+
+(add-to-list 'consult-buffer-sources 'kjb/consult--vterm-buffer-source 'append)
+#+END_SRC
+**** Embark
+Gives me contextual options for an active minibuffer selection or
+thing at point. Currently, I have the key function `embark-act` bound
+to shift-return. Works nicely! There's plenty of improvement available
+here when we're ready:
+- I'm mostly using the default embark bindings. They're pretty
+  intuitive, and more than anything I just needed the "o" option. I'll
+  customize these more as I learn to use the package
+- I haven't bound `embark-dwim` because I don't really have a
+  "default" action on a given target right now. This is something I
+  expect to build out as I use embark more.
+#+BEGIN_SRC emacs-lisp
+(use-package embark
+  :ensure t
+  :bind
+  (("S-<return>" . embark-act))         ;; pick some comfortable binding
+  ;; TODO Make default DWIM targets after you've used embark for a while.
+   ;; ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ;; ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+  :config
+
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
+#+END_SRC
+
 *** Avy
 #+BEGIN_SRC emacs-lisp
   (use-package avy)
@@ -788,8 +879,9 @@ Enable some pasting
 #+BEGIN_SRC emacs-lisp
   (defvar buffer-map (make-sparse-keymap)
     "Buffer manipulation")
-  (define-key buffer-map (kbd "d") 'kill-buffer-and-window)
-  (define-key buffer-map (kbd "b") 'ivy-switch-buffer)
+  (define-key buffer-map (kbd "D") 'kill-buffer-and-window)
+  (define-key buffer-map (kbd "d") 'kill-current-buffer)
+  (define-key buffer-map (kbd "b") 'consult-buffer)
   (define-key buffer-map (kbd "s")
               (lambda ()
                 (interactive)
@@ -1027,6 +1119,14 @@ the dwim function in the vterm section.
               (lambda ()
                 (interactive)
                 (kjb/vterm-dwim "VTERM_4")))
+  (define-key terminal-map (kbd "t")
+              (lambda ()
+                (interactive)
+                (consult-buffer '(kjb/consult--vterm-buffer-source))))
+  (define-key terminal-map (kbd ".")
+              (lambda ()
+                (interactive)
+                (vterm 'default-directory)))
 #+END_SRC
 
 *** Top-level-map
