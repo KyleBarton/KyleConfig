@@ -619,6 +619,33 @@ CLOSED: [2021-01-19 Tue 20:33]
 #+BEGIN_SRC emacs-lisp
   (use-package typescript-mode)
 #+END_SRC
+
+*Setting Up Tide*
+#+BEGIN_SRC emacs-lisp
+  (defun setup-tide-mode ()
+    (interactive)
+    (tide-setup)
+    (flycheck-mode +1)
+    (setq flycheck-check-syntax-automatically '(save mode-enabled))
+    (eldoc-mode +1)
+    (tide-hl-identifier-mode +1)
+    ;; company is an optional dependency. You have to
+    ;; install it separately via package-install
+    ;; `M-x package-install [ret] company`
+    (company-mode +1))
+
+  (use-package tide
+    :config
+    ;; aligns annotation to the right hand side
+    (setq company-tooltip-align-annotations t)
+    ;; formats the buffer before saving
+    (add-hook 'before-save-hook 'tide-format-before-save)
+    (add-hook 'typescript-mode-hook #'setup-tide-mode))
+
+
+  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
+#+END_SRC
+
 **** TODO java
 **** TODO python
 **** TODO ruby
@@ -713,21 +740,22 @@ through the install. NPM is a dependency but that's all. Could try
 tide at some point but lsp ui is so nice
 **** typescript
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'typescript-mode-hook
-            (lambda ()
-              (setq lsp-clients-typescript-server-args '("--stdio" "--tsserver-log-file=/Users/kybarton/ts-ls-log.txt"))
-              (setq typescript-indent-level 2)
-              (eval (lsp))
-              (eval (lsp-ui-doc-enable nil))))
+  (defun kjb/lsp-typescript-hook ()
+    "Function to be added to `typescript-mode-hook' to configure `lsp-mode'"
+    (lsp)
+    (setq typescript-indent-level 2)
+    (eval (lsp-ui-doc-enable t)))
+
+  (add-hook 'typescript-mode-hook #'kjb/lsp-typescript-hook)
 #+END_SRC
 
 **** javascript
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'js-mode-hook
-            (lambda ()
-              (setq lsp-clients-typescript-server-args '("--stdio" "--tsserver-log-file=/Users/kybarton/ts-ls-log.txt"))
-              (eval (lsp))
-              (eval (lsp-ui-doc-enable nil))))
+  ;; (add-hook 'js-mode-hook
+  ;;           (lambda ()
+  ;;             (setq lsp-clients-typescript-server-args '("--stdio" "--tsserver-log-file=/Users/kybarton/ts-ls-log.txt"))
+  ;;             (eval (lsp))
+  ;;             (eval (lsp-ui-doc-enable nil))))
 #+END_SRC
 
 *** DONE Java
