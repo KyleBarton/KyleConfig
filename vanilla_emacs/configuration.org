@@ -44,6 +44,17 @@ path here for future use with use-package:
   (menu-bar-mode -1)
   (electric-pair-mode +1)
 #+END_SRC
+*** Visual Bell
+I actually like getting /some/ feedback when a command fails, but I
+hate the audio beep and a full-screen flash is too much. This hack
+allows me to flash just the mode line as the bell.
+#+BEGIN_SRC emacs-lisp
+(defun flash-mode-line ()
+  (invert-face 'mode-line)
+  (run-with-timer 0.05 nil #'invert-face 'mode-line))
+
+(setq ring-bell-function #'flash-mode-line)
+#+END_SRC
 *** Backup files
 Kill them So, it turns out backup files might be useful, and I might
 want to consider configuring them someday. For now, auto-saves still
