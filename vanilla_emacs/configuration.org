@@ -393,8 +393,6 @@ should consider iterating on:
 - Better color coding if it's available to me.
 #+BEGIN_SRC emacs-lisp
 (use-package consult)
-;; Recommended if also using embark, which I am.
-(use-package consult-embark)
 #+END_SRC
 ***** Buffers
 Various buffer-related custom sources for consult.
@@ -442,6 +440,8 @@ here when we're ready:
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
                  (window-parameters (mode-line-format . none)))))
+;; Recommended if also using consult, which I am.
+(use-package embark-consult)
 #+END_SRC
 
 *** Avy
@@ -836,6 +836,8 @@ Assumes that [[https://github.com/MaskRay/ccls][ccls]] is installed.
                             (setq evil-auto-indent nil)))
   ;; Set visual line mode by default
   (add-hook 'org-mode-hook #'visual-line-mode)
+  ;; Go save all org files when auto-save runs (helpful for agenda)
+  (add-hook 'auto-save-hook #'org-save-all-org-buffers)
 #+END_SRC
 *** Org-roam
 Sets up the org-roam directory and some encryption preferences. Org
@@ -878,6 +880,9 @@ solution set up.
 
 Adds my custom `hs-org-capture` package for taking capture notes using
 hammerspoon shortcuts. Currently, relies on `org-roam` and `s`
+
+TODO this falls beyond org-roam now; I'm using it for gtd/agenda stuff
+too.
 
 #+BEGIN_SRC emacs-lisp
   (use-package hs-org-capture
