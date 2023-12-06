@@ -286,3 +286,8 @@ org-capture that allows the user to specify a filename by setting
 
 ;; Access to my main key map from agenda mode map
 (define-key org-agenda-mode-map (kbd "SPC") top-level-map)
+
+;; Have to allow scrolling; next action lists get big
+(define-key org-agenda-mode-map (kbd "C-u") #'evil-scroll-up)
+(define-key org-agenda-mode-map (kbd "C-d") #'evil-scroll-down)
+

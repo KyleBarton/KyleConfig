@@ -43,6 +43,11 @@ case you'll want to customize this value to the location of the
   :type 'string
   :group 'hs-org-capture)
 
+(defcustom hs-org-capture/org-agenda-capture--frame-name "CAPTURE-INBOX"
+  "Frame name used when taking an IN for my org agenda"
+  :type 'string
+  :group 'hs-org-capture)
+
 (defcustom hs-org-capture/hs-callback "hs.window.switcher.nextWindow()"
   "Hammerspoon function which is invoked when control is returned
 to hammerspoon via IPC"
@@ -87,6 +92,15 @@ capture is completed."
   (hs-org-capture/capture-in-floating-frame
    hs-org-capture/org-roam-daily-capture-timestamp--frame-name
    #'org-roam-dailies-capture-today nil "t"))
+
+
+;;;###autoload
+(defun hs-org-capture/org-agenda-capture ()
+  "Version 0.0.10"
+  (interactive)
+  (hs-org-capture/capture-in-floating-frame
+   hs-org-capture/org-agenda-capture--frame-name
+   #'org-capture nil "i"))
 
 (provide 'hs-org-capture)
 

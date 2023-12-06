@@ -32,11 +32,12 @@
   "Experimental MacOs integration for Ivy and Hammerspoon"
   :group 'Tools)
 
-(defcustom hs-ivy/hs-cmd "/Applications/Hammerspoon.app/Contents/Resources/extensions/hs/ipc/bin/hs"
-  "Hammerspoon executable for IPC. Defaults to
-/Applications/Hammerspoon.app/Contents/Resources/extensions/hs/ipc/bin/hs. In
-many cases, we do not want to add 'hs' straight to the user PATH
-because of a conflict with hs, the http-server"
+(defcustom hs-ivy/hs-cmd "hs"
+  "Hammerspoon executable for IPC. Defaults to hs and assumes it is
+on the PATH.. In some cases, we do not want to add 'hs' straight
+to the user PATH because of a conflict with hs, the
+http-server. In this case, customize this variable to the
+absolute path to the hs executable."
   :type 'string
   :group 'hs-ivy)
 

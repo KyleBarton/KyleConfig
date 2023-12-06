@@ -142,6 +142,19 @@ CommandMode:bind('', 'n', function()
       )
 end)
 
+
+-- Capture an IN
+CommandMode:bind('', 'i', function()
+      CommandMode:exit()
+
+      ecUtils.evalNoFrame("(hs-org-capture/org-agenda-capture)")
+      hs.timer.doAfter(0.3,
+	 function()
+	    hs.window.find("hs-org-capture/org-agenda-capture--frame-name"):focus()
+	 end
+      )
+end)
+
 ----------------------------------------------------------------------------------------
 -- Functions built to be called by emacs
 ----------------------------------------------------------------------------------------

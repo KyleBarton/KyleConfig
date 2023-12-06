@@ -44,6 +44,12 @@ path here for future use with use-package:
   (menu-bar-mode -1)
   (electric-pair-mode +1)
 #+END_SRC
+*** Movement preferences
+Don't expect double-spaces after sentences. Effects "(" and ")" in
+evil mode
+#+BEGIN_SRC emacs-lisp
+(setq-default sentence-end-double-space nil)
+#+END_SRC
 *** Visual Bell
 I actually like getting /some/ feedback when a command fails, but I
 hate the audio beep and a full-screen flash is too much. This hack
@@ -167,6 +173,18 @@ eshell in the projectile directory). Well, TODO I guess.
        (with-current-buffer buf
          (eq (symbol-value 'major-mode) mode)))
      (buffer-list)))
+#+END_SRC
+*** Textual evaluation
+**** Insert Date
+Inserts the current date in YYYY-MM-DD format. Stolen from ChatGPT.
+Could be improved as it comes before the evil cursor, rather than
+on/after it. Haven't figured out a good way to fix that for now.
+
+#+BEGIN_SRC emacs-lisp
+(defun kjb/insert-current-date ()
+  "Inserts the current date in YYYY-MM-DD format at point."
+  (interactive)
+  (insert (format-time-string "%Y-%m-%d")))
 #+END_SRC
 ** Packages
 *** Use-package
@@ -441,7 +459,7 @@ here when we're ready:
                  nil
                  (window-parameters (mode-line-format . none)))))
 ;; Recommended if also using consult, which I am.
-(use-package embark-consult)
+;; (use-package embark-consult)
 #+END_SRC
 
 *** Avy
@@ -558,6 +576,17 @@ Enables a "tree-like" dired navigation
     :config
     (setq-default dired-subtree-use-backgrounds nil))
 #+END_SRC
+**** Copy filename on rename
+When renaming a file from dired, I often want the same file name but
+in a different folder. Unfortunately, auto-completions for filenames
+are based on the destination folder, which makes "moving" files with
+complex names difficult. This is easier if I just copy the filename to
+my killring any time I start a renaming operation. Then I can paste
+the filename once I've moved to the folder I want.
+
+#+BEGIN_SRC emacs-lisp
+(advice-add 'dired-do-rename :before #'dired-copy-filename-as-kill)
+#+END_SRC
 
 *** Shell Support (Vterm)
 Below I add vterm with some basic settings (requires evil).  Sets the
@@ -599,6 +628,21 @@ progress) aimed at supporting my terminal-map (see keymappings)
 
 
 #+END_SRC
+
+This is a function that simply starts vterm in the home directory. It
+relies on the very handy `projectile` macro
+`projectile-with-default-dir`, which does exactly what I need. Not
+sure if it's in the public API, but projectile seems stable enough
+that I'm ok with the dependency for this convenience for now.
+
+#+BEGIN_SRC emacs-lisp
+(defun kjb/vterm-home ()
+  "Create a vterm in the home directory"
+  (interactive)
+  (projectile-with-default-dir (getenv "HOME")
+    (vterm)))
+#+END_SRC
+
 
 *** TODO Language Support
 Need to fill this out
@@ -818,7 +862,11 @@ Assumes that [[https://github.com/MaskRay/ccls][ccls]] is installed.
 *** TODO Ruby
 *** TODO C#
 ** Org
-*THISISBOLD* /this italics/ +this strikethrough+ _this underline_
+*Note* org config here presumes the existence of `ispell`, which may
+need to be installed on your OS. For Macs, `brew install ispell` seems
+to work just fine.
+
+
 #+BEGIN_SRC emacs-lisp
   (setq-default org-startup-indented 't)
   (setq-default org-pretty-entities 't)
@@ -836,9 +884,14 @@ Assumes that [[https://github.com/MaskRay/ccls][ccls]] is installed.
                             (setq evil-auto-indent nil)))
   ;; Set visual line mode by default
   (add-hook 'org-mode-hook #'visual-line-mode)
+  ;; Set flyspell (automatic inline spell-checking) mode on for org mode
+  (add-hook 'org-mode-hook #'flyspell-mode)
   ;; Go save all org files when auto-save runs (helpful for agenda)
   (add-hook 'auto-save-hook #'org-save-all-org-buffers)
 #+END_SRC
+
+*** Style reference
+*THISISBOLD* /this italics/ +this strikethrough+ _this underline_
 *** Org-roam
 Sets up the org-roam directory and some encryption preferences. Org
 roam directory varies from computer-to-computer, but should always
@@ -879,7 +932,7 @@ solution set up.
 #+END_SRC
 
 Adds my custom `hs-org-capture` package for taking capture notes using
-hammerspoon shortcuts. Currently, relies on `org-roam` and `s`
+Hammerspoon shortcuts. Currently, relies on `org-roam` and `s`
 
 TODO this falls beyond org-roam now; I'm using it for gtd/agenda stuff
 too.
@@ -907,7 +960,17 @@ files, which enables my spreadsheeting system for family finances.
 
   (advice-add 'org-id-find :around #'kjb/org-id-find--around-advice)
 #+END_SRC
+**** Org-roam ui
+Add org-roam-ui as a nicety so that you can visualize your madness.
 
+#+BEGIN_SRC emacs-lisp
+(use-package org-roam-ui
+  :config
+  (setq org-roam-ui-sync-theme t
+	org-roam-ui-follow t
+	org-roam-ui-update-on-save t
+	org-roam-ui-open-on-start t))
+#+END_SRC
 ** Key Maps
 *** Misc
 Place for me to append key-mappings for various minor modes, which
@@ -969,6 +1032,8 @@ Enable some pasting
   (define-key execution-map (kbd "b") 'eval-buffer)
   (define-key execution-map (kbd "r") 'eval-region)
   (define-key execution-map (kbd "ps") 'projectile-run-async-shell-command-in-root)
+  ;; Todo better place for this
+  (define-key execution-map (kbd "d") 'kjb/insert-current-date)
 #+END_SRC
 
 **** File Manipulation
@@ -1129,6 +1194,7 @@ lsp-mode is not active
   (define-key language-map (kbd "gr") 'lsp-find-references)
   (define-key language-map (kbd "aa") 'lsp-execute-code-action)
   (define-key language-map (kbd "fp") 'fill-paragraph)
+  (define-key language-map (kbd "sp") 'ispell-word)
 #+END_SRC
 **** Knowledge Map
 Submap for knowledge-base & personal organization
@@ -1180,6 +1246,7 @@ the dwim function in the vterm section.
               (lambda ()
                 (interactive)
                 (vterm 'default-directory)))
+  (define-key terminal-map (kbd "~") #'kjb/vterm-home)
 #+END_SRC
 
 *** Top-level-map
