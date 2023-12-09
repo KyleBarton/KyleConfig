@@ -186,6 +186,20 @@ on/after it. Haven't figured out a good way to fix that for now.
   (interactive)
   (insert (format-time-string "%Y-%m-%d")))
 #+END_SRC
+**** Insert Math Result
+Simple utility stolen from ChatGPT. It has a couple of problems that still need solving:
+- It inserts behind the "normal-mode" evil cursor. This is a problem
+  for the date function too. I need to figure out a generalized
+  solution.
+- I need a variation that reads in-line from the buffer somehow.
+
+#+BEGIN_SRC emacs-lisp
+(defun kjb/insert-math-result ()
+  "Prompt for a simple math expression and insert the result at point."
+  (interactive)
+  (let ((expression (read-string "Expression: ")))
+    (insert (calc-eval expression))))
+#+END_SRC
 ** Packages
 *** Use-package
 **** Initialize package with correct archives
@@ -643,7 +657,6 @@ that I'm ok with the dependency for this convenience for now.
     (vterm)))
 #+END_SRC
 
-
 *** TODO Language Support
 Need to fill this out
 - Major modes that need work:
@@ -730,6 +743,29 @@ Using web-mode for html/mustache/php & variants.
     (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
     (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
     (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
+#+END_SRC
+**** Ledger
+Ledger-mode provides syntax highlighting and auto-completion for
+.journal-style accounting files. I've started moving family finances
+slowly into ledger since the beginning of 2023, and this mode helps
+enable that. While not a coding language like the other members of
+this section, I feel it is still a "language" that belongs listed
+here.
+
+#+BEGIN_SRC emacs-lisp
+(use-package ledger-mode
+  :config
+  (add-to-list 'auto-mode-alist '("\\.journal\\'" . ledger-mode))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   (append org-babel-load-languages
+	   '((ledger . t)))))
+
+#+END_SRC
+
+Additionally, this lets ledger blocks evaluate in org mode via org-babel
+#+BEGIN_SRC emacs-lisp
+(load-file ".emacs_custom_packages/ob-ledger.el")
 #+END_SRC
 *** Hammerspoon integration
 With hammerspoon installed, I have a package, /hs-ivy/, which provides
@@ -960,6 +996,13 @@ files, which enables my spreadsheeting system for family finances.
 
   (advice-add 'org-id-find :around #'kjb/org-id-find--around-advice)
 #+END_SRC
+
+Finally, set org-id-track-globally to nil because behavior is weird
+when it is enabled. Best to let org-roam handle this rather than org
+directly right now.
+#+BEGIN_SRC emacs-lisp
+(setq org-id-track-globally nil)
+#+END_SRC
 **** Org-roam ui
 Add org-roam-ui as a nicety so that you can visualize your madness.
 
@@ -970,6 +1013,82 @@ Add org-roam-ui as a nicety so that you can visualize your madness.
 	org-roam-ui-follow t
 	org-roam-ui-update-on-save t
 	org-roam-ui-open-on-start t))
+#+END_SRC
+**** Org-roam capture with links: an example
+I played around with creating a capture template that included a link
+to a known node before, but never got it to prime-time. I'm recording
+as commented code here what I came up with.
+#+BEGN_SRC emacs-lisp
+;; (defun kjb/org-roam-id-from-title (title_arg)
+;;   "Returns org roam ID for a given title. Checks aliases
+;; secondarily to title."
+;;   (let
+;;       ((id_from_title (caar ;; takes first element of org-roam-db-query list
+;; 		       (org-roam-db-query
+;; 			[:SELECT id :FROM nodes :WHERE (= title $s1)]
+;; 			title_arg
+;; 			)))
+;;        (id_from_alias (caar ;; takes first element of org-roam-db-query list
+;; 		       (org-roam-db-query
+;; 			[:SELECT node-id :FROM aliases :WHERE (= alias $s1)]
+;; 			title_arg
+;; 			))))
+;;     (cond
+;;      ((stringp id_from_title) id_from_title)
+;;      ((stringp id_from_alias) id_from_alias))))
+
+;; (defun kjb/org-roam-capture-gtd-project-id (node)
+;;   "Private function to be called in the GTD Project capture
+;; template. Returns the org roam id of GTD_PROJECT. The node
+;; argument is supplied by org roam's template expansion system, but
+;; it is unnecessary - the title is hard-coded."
+;;   (kjb/org-roam-id-from-title "GTD_PROJECT"))
+
+
+;; (setq org-roam-capture-templates
+;;       '(("d" "default" plain "%?"
+;; 	 :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org.gpg"
+;; 			    "#+title: ${title}")
+;; 	 :unnarrowed t)
+;; 	("g" "GTD Project" plain
+;; 	 "\n\n* [[id:${kjb/org-roam-capture-gtd-project-id}][GTD PROJECT]] \n* Summary \n %?"
+;; 	 :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org.gpg"
+;; 			    "#+title: ${title}"))))
+#+END_SRC
+*** Org-babel extensions
+**** Shell
+#+BEGIN_SRC emacs-lisp
+(require 'ob-shell)
+(org-babel-do-load-languages
+   'org-babel-load-languages
+   (append org-babel-load-languages
+	   '((shell . t))))
+#+END_SRC
+**** GNU Plot
+#+BEGIN_SRC emacs-lisp
+(use-package gnuplot
+  :ensure t)
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ (append org-babel-load-languages
+	 '((gnuplot . t))))
+#+END_SRC
+**** SQL
+#+BEGIN_SRC emacs-lisp
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ (append org-babel-load-languages
+	 '((sql . t))))
+#+END_SRC
+** Markdown
+I use emacs surprisingly little for markdown today (e.g. late 2023).
+However, I'd like that to change. For now, we assume that `cmark-gfm`
+is installed (`brew install cmark-gfm`), which provides
+github-flavored markdown. I use that as my markdown command for
+previewing.
+#+BEGIN_SRC emacs-lisp
+(setq markdown-command "cmark-gfm")
 #+END_SRC
 ** Key Maps
 *** Misc
@@ -1034,6 +1153,8 @@ Enable some pasting
   (define-key execution-map (kbd "ps") 'projectile-run-async-shell-command-in-root)
   ;; Todo better place for this
   (define-key execution-map (kbd "d") 'kjb/insert-current-date)
+  ;; Todo better place for this
+  (define-key execution-map (kbd "m") 'kjb/insert-math-result)
 #+END_SRC
 
 **** File Manipulation
