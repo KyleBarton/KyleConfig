@@ -244,15 +244,11 @@ Everything after this should use use-package for management
   ;;   (load-theme 'spacemacs-dark t))
 #+END_SRC
 **** Poet (Inactive)
-Keeping poet on ice for now.
+Install poet, but just activate it when you are doing writing and it
+makes sense for your eyes.
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package poet-theme
-  ;;   :init
-  ;;   (load-theme 'poet t)
-  ;;   :config
-  ;;   (add-hook 'text-mode-hook
-  ;;             (lambda ()
-  ;;               (variable-pitch-mode 1))))
+  (use-package poet-theme
+    :ensure t)
 #+END_SRC
 
 **** Fonts
@@ -1307,6 +1303,21 @@ One nice improvement would
 be to define generic functions, e.g. 'rename-impl, which would wrap
 the dependency on lsp and define backup functions for situations where
 lsp-mode is not active
+
+*Update 2023-12-14*
+
+This has become more of a generic content editing map for things which
+have "language", in the broader sense:
+- Lsp operations for code
+- Filling paragraphs lines
+- Manipulating org blocks
+- spell-checking
+
+
+I played around with having a distinct map for these non-lsp
+operations: a "content" map, which lived on SPC-c. But Honestly SPC-l
+feels better ergonomically. And this map can have a few different
+meanings I feel.
 #+BEGIN_SRC emacs-lisp
   (defvar language-map (make-sparse-keymap)
     "Mappings for various language/lsp bindings and manipulation")
@@ -1316,6 +1327,8 @@ lsp-mode is not active
   (define-key language-map (kbd "aa") 'lsp-execute-code-action)
   (define-key language-map (kbd "fp") 'fill-paragraph)
   (define-key language-map (kbd "sp") 'ispell-word)
+  (define-key language-map (kbd "[") #'org-do-promote)
+  (define-key language-map (kbd "]") #'org-do-demote)
 #+END_SRC
 **** Knowledge Map
 Submap for knowledge-base & personal organization
