@@ -134,6 +134,20 @@ Therefore, this function should be considered unstable."
     (pop-to-buffer org-agenda-buffer-name)))
 
 
+(defun kjb/completing-read-category-filter ()
+  "Filters by category using completing-read. Basically has the same
+effect as `org-agenda-filter-by-category', but that function is
+limited by the fact that it must filter by the category on the
+line at point."
+  (interactive)
+  (let ((category
+	 (completing-read "Category: " (kjb/get-agenda-file-category-values))))
+    (org-agenda-filter-apply
+     (setq org-agenda-category-filter
+	   (list (concat "+" category)))
+     'category)))
+
+
 (defvar kjb/project-org-capture-name nil
   "Desired friendly name for a new project. This can be a full sentence, e.g.
 'Travel to New York'. The project tag & filename will be derived
@@ -280,6 +294,8 @@ org-capture that allows the user to specify a filename by setting
 (define-key org-agenda-mode-map (kbd "f") 'org-agenda-refile)
 ;; Give it a category (action context) with "c"
 (define-key org-agenda-mode-map (kbd "c") 'kjb/set-category-property-cr--agenda)
+;; Similarly, allowing for a completing-read category filter with "C"
+(define-key org-agenda-mode-map (kbd "C") #'kjb/completing-read-category-filter)
 ;; Standard vim-style row navigation
 (define-key org-agenda-mode-map (kbd "j") 'org-agenda-next-line)
 (define-key org-agenda-mode-map (kbd "k") 'org-agenda-previous-line)
@@ -290,4 +306,3 @@ org-capture that allows the user to specify a filename by setting
 ;; Have to allow scrolling; next action lists get big
 (define-key org-agenda-mode-map (kbd "C-u") #'evil-scroll-up)
 (define-key org-agenda-mode-map (kbd "C-d") #'evil-scroll-down)
-
