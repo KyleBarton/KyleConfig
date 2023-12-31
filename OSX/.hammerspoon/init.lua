@@ -22,8 +22,14 @@
   -- In browser, if focused on a text input, pipe to an emacs scratch window for editing, and pipe back on exit
 ----------------------------------------------------------------------------------------
 
+-- Trying editWithEmacs: https://github.com/dmgerman/editWithEmacs.spoon
+hs.loadSpoon("editWithEmacs")
+
 -- Allow emacs to call hs back for window manipulation
 require("hs.ipc")
+if not hs.ipc.cliStatus() then
+   hs.ipc.cliInstall()
+end
 
 local constants = require(".constants")
 local keys = constants.keys
@@ -103,6 +109,27 @@ function openOptionsWindow(windowName, ivyFunc, options)
    ecUtils.callIvyFunc(windowName, ivyFunc, options)
    hs.timer.doAfter(0.3, function() focusWindowByTitle(windowName) end)
 end
+
+
+-- if spoon.editWithEmacs then
+--    local bindings = {
+--       edit_selection =  { {"alt"}, "1"},
+--       edit_all       = { {"alt"}, "2"}
+--    }   
+--    spoon.editWithEmacs:bindHotkeys(bindings)
+-- end
+
+-- Loads the necessary emacs utilities.
+ecUtils.evalNoFrame([[(load "~/.hammerspoon/Spoons/editWithEmacs.spoon/hammerspoon.el")]])
+-- editWithEmacs doesn't delete the prompt frame by default
+ecUtils.evalNoFrame([[(advice-add #'hammerspoon-edit-end :after (lambda () (delete-frame)))]])
+
+CommandMode:bind('', 'e', function()
+      CommandMode:exit()
+      if spoon.editWithEmacs then
+	 spoon.editWithEmacs:beginEditing(true)
+      end
+end)
 
 CommandMode:bind('', keys.CAPS_LOCK, function()
       CommandMode:exit()
