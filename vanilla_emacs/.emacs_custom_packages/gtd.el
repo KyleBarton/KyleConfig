@@ -205,7 +205,7 @@ used more generally, like for allowed filename chars."
       (dolist (char (string-to-list input))
 	(when (seq-contains-p allowed-chars char)
 	  (setq filtered-chars (append filtered-chars (list char)))))
-      (mapconcat 'string filtered-chars))))
+      (mapconcat 'string filtered-chars ""))))
 
 
 (defun kjb/project-tag-name-from-name (project-name)
