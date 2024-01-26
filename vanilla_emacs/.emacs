@@ -4,6 +4,8 @@
 ;; Set up GTD (may move this to org some day)
 (load (concat (getenv "HOME") "/.emacs_custom_packages/gtd.el"))
 
+(setq split-height-threshold nil)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;NEW LANGUAGE SUPPORT ;;;;;;;;;;;;;;;;;;;;;
 
