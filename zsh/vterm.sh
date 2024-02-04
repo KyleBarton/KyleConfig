@@ -1,7 +1,10 @@
 ## Source this from your .zshrc to enable shell configuration for
 # vterm Something akin to:
 
-# if [[ "$INSIDE_EMACS" = 'vterm' ]] \ source {ThisFile} fi
+# if [[ "$INSIDE_EMACS" = 'vterm' ]]
+# then
+#    source vterm.sh
+# fi
 
 # vterm functions here borrowed verbatum from https://github.com/akermu/emacs-libvterm
 
