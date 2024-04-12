@@ -175,6 +175,8 @@ eshell in the projectile directory). Well, TODO I guess.
      (buffer-list)))
 #+END_SRC
 *** Textual evaluation
+"Insert" here uses a hack with evil-set-register and evil-paste-after.
+I should probably extract that out to a common function at some point.
 **** Insert Date
 Inserts the current date in YYYY-MM-DD format. Stolen from ChatGPT.
 Could be improved as it comes before the evil cursor, rather than
@@ -184,7 +186,9 @@ on/after it. Haven't figured out a good way to fix that for now.
 (defun kjb/insert-current-date ()
   "Inserts the current date in YYYY-MM-DD format at point."
   (interactive)
-  (insert (format-time-string "%Y-%m-%d")))
+  (evil-set-register (max-char) (format-time-string "%Y-%m-%d"))
+  (evil-paste-after 1 (max-char)))
+
 #+END_SRC
 **** Insert Math Result
 Simple utility stolen from ChatGPT. It has a couple of problems that still need solving:
@@ -198,7 +202,8 @@ Simple utility stolen from ChatGPT. It has a couple of problems that still need 
   "Prompt for a simple math expression and insert the result at point."
   (interactive)
   (let ((expression (read-string "Expression: ")))
-    (insert (calc-eval expression))))
+    (evil-set-register (max-char) (calc-eval expression))
+    (evil-paste-after 1 (max-char))))
 #+END_SRC
 ** Packages
 *** Use-package
