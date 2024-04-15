@@ -909,6 +909,7 @@ to work just fine.
   (setq-default org-pretty-entities 't)
   (setq-default org-log-done 'time)
   (setq-default org-startup-with-inline-images 't)
+  (setq-default org-pretty-entities-include-sub-superscripts nil)
   ;; Make sure you can use `attr_html: :width height/width'
   ;; to prevent giant images from overhwelming the buffer.
   (setq-default org-image-actual-width nil)
