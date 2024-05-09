@@ -320,6 +320,11 @@ evil-nerd-commenter does a few things that comment-line and comment-dwim don't (
     (use-package evil-nerd-commenter)
   #+END_SRC
 
+*** Counsel
+Not using ivy anymore, but still like counsel for some search stuff
+#+BEGIN_SRC emacs-lisp
+  (use-package counsel)
+#+END_SRC
 *** Smex
 Not sure if this actually works with the new stack. May want to move
 on from it.
