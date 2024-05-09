@@ -1216,7 +1216,7 @@ Intense filesystem/symbol searches here.
   (defvar search-map (make-sparse-keymap)
     "Search utilities")
   (define-key search-map (kbd "f") 'counsel-fzf)
-  (define-key search-map (kbd "s") 'counsel-ag)
+  (define-key search-map (kbd "s") 'consult-ripgrep)
   (define-key search-map (kbd "e") 'evil-iedit-state/iedit-mode)
   (define-key search-map (kbd "r") 'replace-string)
 #+END_SRC
