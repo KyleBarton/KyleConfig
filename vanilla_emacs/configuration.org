@@ -320,58 +320,9 @@ evil-nerd-commenter does a few things that comment-line and comment-dwim don't (
     (use-package evil-nerd-commenter)
   #+END_SRC
 
-*** Ivy & such
-**** Base Ivy
-#+BEGIN_SRC emacs-lisp
-  (use-package ivy
-    :config
-    (ivy-mode)
-    (setq ivy-use-virtual-buffers t)
-    (setq ivy-count-format "(%d/%d) ")
-    (setq enable-recursive-minibuffers t)
-    (setq ivy-use-selectable-prompt t))
-#+END_SRC
-
-**** Counsel
-#+BEGIN_SRC emacs-lisp
-  (use-package counsel
-    :config
-    (setq ivy-re-builders-alist
-          '((counsel-describe-function . ivy--regex-ignore-order)
-            (counsel-describe-variable . ivy--regex-ignore-order)
-            (counsel-M-x . ivy--regex-ignore-order)
-            (t . ivy--regex-plus)))
-    (setcdr (assoc 'counsel-M-x ivy-initial-inputs-alist) "")
-    (setcdr (assoc 'counsel-describe-symbol ivy-initial-inputs-alist) ""))
-#+END_SRC
-
-**** Posframe
-Creates a floating frame for ivy-related searches
-#+BEGIN_SRC emacs-lisp
-  ;; Creates a floating M-x frame
-  (use-package ivy-posframe
-    :config
-    (setq ivy-posframe-display-functions-alist
-          '((swiper                               . ivy-posframe-display-at-point)
-            ;;(complete-symbol                    . ivy-posframe-display-at-point)
-            ;;(t                                  . ivy-posframe-display)
-            (counsel-M-x                          . ivy-posframe-display-at-frame-center)
-            (counsel-rg                           . ivy-posframe-display-at-frame-center)
-            (counsel-ag                           . ivy-posframe-display-at-frame-center)
-            (counsel-find-file                    . ivy-posframe-display-at-frame-center)
-            (ivy-switch-buffer                    . ivy-posframe-display-at-frame-center)
-            (counsel-describe-function            . ivy-posframe-display-at-frame-center)
-            (counsel-describe-variable            . ivy-posframe-display-at-frame-center)
-            (counsel-projectile-find-file         . ivy-posframe-display-at-frame-center)
-            (counsel-projectile-switch-to-buffer  . ivy-posframe-display-at-frame-center)
-            (counsel-projectile-switch-project    . ivy-posframe-display-at-frame-center)
-            (counsel-projectile-find-dir          . ivy-posframe-display-at-frame-center)
-            (counsel-projectile-ag                . ivy-posframe-display-at-frame-center)
-            (counsel-fzf                          . ivy-posframe-display-at-frame-center)
-            (counsel-projectile-rg                . ivy-posframe-display-at-frame-center)))
-    (ivy-posframe-mode 1))
-#+END_SRC
-
+*** Smex
+Not sure if this actually works with the new stack. May want to move
+on from it.
 **** smex
 Give me some command history!
 #+BEGIN_SRC emacs-lisp
@@ -385,12 +336,12 @@ Give me some command history!
 Building up a SMOCE stack (or VMOCE, depending if I end up using
 vertico instead), with the hope that this eventually replaces Ivy so
 that I'm using built-in completion functions.
-**** Selectrum
-Selectrum provides a completing-read function.
+**** Vertico
+Replaces selectrum (and ivy) as my completing-read UI
 #+BEGIN_SRC emacs-lisp
-  (use-package selectrum
-    :config
-    (selectrum-mode +1))
+  (use-package vertico
+    :init
+    (vertico-mode))
 #+END_SRC
 **** Marginalia
 Haven't really done much beyond the base configuration here. Lots of
@@ -474,7 +425,7 @@ here when we're ready:
                  nil
                  (window-parameters (mode-line-format . none)))))
 ;; Recommended if also using consult, which I am.
-;; (use-package embark-consult)
+(use-package embark-consult)
 #+END_SRC
 
 *** Avy
@@ -503,16 +454,15 @@ ace-link is too complicated for me
   (use-package projectile
     :ensure t
     :config
-    (setq projectile-completion-system 'ivy)
     (projectile-mode +1))
 #+END_SRC
 
 **** Counsel projectile
 So that I can use posframe here as well
 #+BEGIN_SRC emacs-lisp
-  (use-package counsel-projectile
-    :config
-    (counsel-projectile-mode))
+  ;; (use-package counsel-projectile
+  ;;   :config
+  ;;   (counsel-projectile-mode))
 #+END_SRC
 
 *** Neotree
@@ -782,7 +732,9 @@ stuff should probably live with Ivy, but I need to iterate on this a
 bit (and also likely move from ivy to a different selection front-end)
 
 #+BEGIN_SRC emacs-lisp
-  (use-package hs-ivy
+  ;; (use-package hs-ivy
+  ;;   :ensure nil)
+  (use-package hs-cr
     :ensure nil)
 #+END_SRC
 ** TODO Code Editing
@@ -1107,8 +1059,8 @@ Enable some pasting
 #+BEGIN_SRC emacs-lisp
   (defvar help-map (make-sparse-keymap)
     "Help & describe functions. General documentation")
-  (define-key help-map (kbd "f") 'counsel-describe-function)
-  (define-key help-map (kbd "v") 'counsel-describe-variable)
+  (define-key help-map (kbd "f") 'describe-function)
+  (define-key help-map (kbd "v") 'describe-variable)
   (define-key help-map (kbd "k") 'describe-key)
 #+END_SRC
 
@@ -1164,7 +1116,7 @@ Enable some pasting
   (defvar file-map (make-sparse-keymap)
     "File manipulation")
   (define-key file-map (kbd "s") 'save-buffer)
-  (define-key file-map (kbd "f") 'counsel-find-file)
+  (define-key file-map (kbd "f") 'find-file)
 #+END_SRC
 
 **** Dired Maps
@@ -1395,7 +1347,7 @@ It needs to happen after submaps are defined
   (defvar top-level-map (make-sparse-keymap)
     "Top level map to send functions to delegate maps")
   ;; direct commands (no need for a submap here yet
-  (define-key top-level-map (kbd "SPC") 'counsel-M-x)
+  (define-key top-level-map (kbd "SPC") 'execute-extended-command)
   (define-key top-level-map (kbd "cl") 'evilnc-comment-or-uncomment-lines)
   (define-key top-level-map (kbd "u") 'universal-argument)
   ;; To submaps

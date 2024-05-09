@@ -126,7 +126,7 @@ CommandMode:bind('', 'w', function()
 	 windowNames[#windowNames+1] = val:title():gsub("\"", "\\\"")
       end
       
-      openOptionsWindow('test', 'hs-ivy/hs-window-select', windowNames)
+      openOptionsWindow('test', 'hs-cr/hs-window-select', windowNames)
 end)
 
 -- Try taking a quick note and deleting frame after.
