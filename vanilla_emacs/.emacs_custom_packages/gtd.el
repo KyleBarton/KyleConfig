@@ -32,13 +32,18 @@
 ;; When agenda starts, make it the only window
 (setq org-agenda-window-setup 'only-window)
 
+(defun kjb/save-org-buffers-ignore-args (&rest args)
+  "Saves buffers while ignoring args. This is helpful in batch mode
+when `org-agenda' is loaded with arguments which I don't want to
+pass through to `org-save-all-org-buffers', which takes no args."
+  (org-save-all-org-buffers))
 
 ;; Save all org buffers when you start, leave, or change org agenda
 ;; view
-(advice-add 'org-agenda-exit :before #'org-save-all-org-buffers)
-(advice-add 'org-agenda-quit :before #'org-save-all-org-buffers)
-(advice-add 'org-agenda-append-agenda :before #'org-save-all-org-buffers)
-(advice-add 'org-agenda :before #'org-save-all-org-buffers)
+(advice-add 'org-agenda-exit :before #'kjb/save-org-buffers-ignore-args)
+(advice-add 'org-agenda-quit :before #'kjb/save-org-buffers-ignore-args)
+(advice-add 'org-agenda-append-agenda :before #'kjb/save-org-buffers-ignore-args)
+(advice-add 'org-agenda :before #'kjb/save-org-buffers-ignore-args)
 
 ;; Only thing I've added is `tag-down' to the `todo' sorting
 ;; strategy. I don't know much about this variable and it should
