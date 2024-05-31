@@ -342,12 +342,21 @@ Building up a SMOCE stack (or VMOCE, depending if I end up using
 vertico instead), with the hope that this eventually replaces Ivy so
 that I'm using built-in completion functions.
 **** Vertico
-Replaces selectrum (and ivy) as my completing-read UI
+Replaces selectrum (and ivy) as my completing-read UI.
+
+Note that vertico-directory* functions seem to be set up in a distinct
+emacs package in vertico. Thus the map binding may need to be
+separated out into a `use-package vertico-directory` command at some
+point in the future.
+
 #+BEGIN_SRC emacs-lisp
   (use-package vertico
     :init
-    (vertico-mode))
+    (vertico-mode)
+    :bind (:map vertico-map
+                ("DEL" . vertico-directory-delete-char)))
 #+END_SRC
+
 **** Marginalia
 Haven't really done much beyond the base configuration here. Lots of
 potential to customize when I have time. Works OOTB with Ivy!
