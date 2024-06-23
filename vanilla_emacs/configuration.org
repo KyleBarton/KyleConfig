@@ -44,12 +44,14 @@ path here for future use with use-package:
   (menu-bar-mode -1)
   (electric-pair-mode +1)
 #+END_SRC
+
 *** Movement preferences
 Don't expect double-spaces after sentences. Effects "(" and ")" in
 evil mode
 #+BEGIN_SRC emacs-lisp
 (setq-default sentence-end-double-space nil)
 #+END_SRC
+
 *** Visual Bell
 I actually like getting /some/ feedback when a command fails, but I
 hate the audio beep and a full-screen flash is too much. This hack
@@ -163,6 +165,7 @@ eshell in the projectile directory). Well, TODO I guess.
 
   (advice-add 'eshell :around #'kjb/eshell-init-on-default-directory)
 #+END_SRC
+
 *** Buffers
 **** Sort by major mode
 #+BEGIN_SRC emacs-lisp
@@ -325,17 +328,6 @@ Not using ivy anymore, but still like counsel for some search stuff
 #+BEGIN_SRC emacs-lisp
   (use-package counsel)
 #+END_SRC
-*** Smex
-Not sure if this actually works with the new stack. May want to move
-on from it.
-**** smex
-Give me some command history!
-#+BEGIN_SRC emacs-lisp
-  (use-package smex
-    :config
-    (unless (boundp smex-initialized-p)
-      (smex-initialize)))
-#+END_SRC
 
 *** SMOCE
 Building up a SMOCE stack (or VMOCE, depending if I end up using
@@ -357,6 +349,12 @@ point in the future.
                 ("DEL" . vertico-directory-delete-char)))
 #+END_SRC
 
+Save history across sessions!
+#+BEGIN_SRC emacs-lisp
+(use-package savehist
+  :init
+  (savehist-mode))
+#+END_SRC
 **** Marginalia
 Haven't really done much beyond the base configuration here. Lots of
 potential to customize when I have time. Works OOTB with Ivy!
