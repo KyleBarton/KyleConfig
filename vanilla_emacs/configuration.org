@@ -180,19 +180,37 @@ eshell in the projectile directory). Well, TODO I guess.
 *** Textual evaluation
 "Insert" here uses a hack with evil-set-register and evil-paste-after.
 I should probably extract that out to a common function at some point.
-**** Insert Date
-Inserts the current date in YYYY-MM-DD format. Stolen from ChatGPT.
-Could be improved as it comes before the evil cursor, rather than
-on/after it. Haven't figured out a good way to fix that for now.
+**** Paste after in Evil
+This is a helper function that inserts text after the evil cursor
+instead of before (which is the default behavior of `insert`). This
+makes "paste" behavior function more like it would in vim.
 
 #+BEGIN_SRC emacs-lisp
-(defun kjb/insert-current-date ()
-  "Inserts the current date in YYYY-MM-DD format at point."
-  (interactive)
-  (evil-set-register (max-char) (format-time-string "%Y-%m-%d"))
+(defun kjb/evil-paste-content-after (content)
+  "Pastes content after the cursor. Meant to be used in evil normal
+state."
+  (evil-set-register (max-char) content)
   (evil-paste-after 1 (max-char)))
-
 #+END_SRC
+**** Insert Date
+Inserts the current date in YYYY-MM-DD format. Stolen from ChatGPT.
+
+insert-current-date will insert text as it would in emacs.
+evil-paste-current-date will insert after the evil cursor in normal
+mode.
+
+#+BEGIN_SRC emacs-lisp
+  (defun kjb/insert-current-date ()
+    "Inserts the current date in YYYY-MM-DD format at point."
+    (interactive)
+    (insert (format-time-string "%Y-%m-%d")))
+
+  (defun kjb/evil-paste-current-date ()
+    "Inserts the current date in YYYY-MM-DD format after point."
+    (interactive)
+    (kjb/evil-paste-content-after (format-time-string "%Y-%m-%d")))
+#+END_SRC
+
 **** Insert Math Result
 Simple utility stolen from ChatGPT. It has a couple of problems that still need solving:
 - It inserts behind the "normal-mode" evil cursor. This is a problem
@@ -201,12 +219,17 @@ Simple utility stolen from ChatGPT. It has a couple of problems that still need 
 - I need a variation that reads in-line from the buffer somehow.
 
 #+BEGIN_SRC emacs-lisp
-(defun kjb/insert-math-result ()
-  "Prompt for a simple math expression and insert the result at point."
+  (defun kjb/insert-math-result ()
+    "Prompt for a simple math expression and insert the result at point."
+    (interactive)
+    (let ((expression (read-string "Expression: ")))
+      (insert (calc-eval expression))))
+
+(defun kjb/evil-paste-math-result ()
+  "Prompt for a simple math expression and insert the result after point."
   (interactive)
   (let ((expression (read-string "Expression: ")))
-    (evil-set-register (max-char) (calc-eval expression))
-    (evil-paste-after 1 (max-char))))
+    (kjb/evil-paste-content-after (calc-eval expression))))
 #+END_SRC
 ** Packages
 *** Use-package
@@ -1119,9 +1142,11 @@ Enable some pasting
   (define-key execution-map (kbd "r") 'eval-region)
   (define-key execution-map (kbd "ps") 'projectile-run-async-shell-command-in-root)
   ;; Todo better place for this
-  (define-key execution-map (kbd "d") 'kjb/insert-current-date)
+  (define-key execution-map (kbd "d") 'kjb/evil-paste-current-date)
+  (define-key execution-map (kbd "D") 'kjb/insert-current-date)
   ;; Todo better place for this
-  (define-key execution-map (kbd "m") 'kjb/insert-math-result)
+  (define-key execution-map (kbd "m") 'kjb/evil-paste-math-result)
+  (define-key execution-map (kbd "M") 'kjb/insert-math-result)
 #+END_SRC
 
 **** File Manipulation
