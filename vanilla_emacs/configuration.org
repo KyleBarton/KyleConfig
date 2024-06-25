@@ -927,7 +927,7 @@ solution set up.
              :target (file+head "%<%Y-%m-%d>.org.gpg"
                                 "#+title: %<%Y-%m-%d>\n"))
             ("t" "timestamped note" entry
-             "* %<%H>:%<%M>\n %?"
+             "* %<%H>:%<%M>\n%?"
              :target (file+head+olp "%<%Y-%m-%d>.org.gpg"
                                     "#+title: %<%Y-%m-%d>\n"
                                     ("Minutes"))))))
@@ -984,7 +984,7 @@ Add org-roam-ui as a nicety so that you can visualize your madness.
 I played around with creating a capture template that included a link
 to a known node before, but never got it to prime-time. I'm recording
 as commented code here what I came up with.
-#+BEGN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
 ;; (defun kjb/org-roam-id-from-title (title_arg)
 ;;   "Returns org roam ID for a given title. Checks aliases
 ;; secondarily to title."
@@ -1021,6 +1021,7 @@ as commented code here what I came up with.
 ;; 	 :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org.gpg"
 ;; 			    "#+title: ${title}"))))
 #+END_SRC
+
 *** Org-babel extensions
 **** Shell
 #+BEGIN_SRC emacs-lisp
