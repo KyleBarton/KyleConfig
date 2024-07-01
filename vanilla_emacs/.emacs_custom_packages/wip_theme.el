@@ -101,6 +101,7 @@
   `(region ((t (:background ,bg-hlt))))
   `(lsp-ui-sideline-global ((t (:background ,bg-hlt))))
   `(ansi-color-yellow ((t (:foreground "systemOrangeColor"))))
+  `(ansi-color-white ((t (:foreground "Brown"))))
 ;; TODO this also inherits highlight and just gets f'd up by vertico. So i'm only correcting what doom did here
   ;; `(lsp-ui-sideline-symbol-info ((t (:inherit link))))
   ;; `(vertico-current ((t (:background ,bg-hlt :weight bold))))
