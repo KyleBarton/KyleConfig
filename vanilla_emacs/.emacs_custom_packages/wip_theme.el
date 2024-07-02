@@ -100,8 +100,16 @@
   `(highlight ((t (:background ,hlt :overline nil))))
   `(region ((t (:background ,bg-hlt))))
   `(lsp-ui-sideline-global ((t (:background ,bg-hlt))))
+  ;; TODO better to do a hex code
   `(ansi-color-yellow ((t (:foreground "systemOrangeColor"))))
+  ;; TODO better to do a hex code
   `(ansi-color-white ((t (:foreground "Brown"))))
+  ;; TODO better to do a hex code
+  `(ansi-color-bright-cyan ((t :foreground "systemTealColor")))
+  ;; TODO better to do a hex code
+  `(ansi-color-cyan ((t :foreground "systemBlueColor")))
+  `(ansi-color-green ((t :foreground "#319a03")))
+  `(ansi-color-bright-green ((t :foreground "#6bdd00")))
 ;; TODO this also inherits highlight and just gets f'd up by vertico. So i'm only correcting what doom did here
   ;; `(lsp-ui-sideline-symbol-info ((t (:inherit link))))
   ;; `(vertico-current ((t (:background ,bg-hlt :weight bold))))
@@ -226,7 +234,6 @@
   `(ivy-org ((t (:inherit fixed-pitch)))))
  (custom-theme-set-variables 'kjb/test-theme
   '(line-spacing .2)))
-
 
 (defun kjb/enable-variable-pitch-mode ()
   "Enables variable pitch mode. Intended for use in `add-hook'."
