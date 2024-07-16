@@ -1,0 +1,24 @@
+install brave, set to default
+install 1Password, signin
+login to ic gmail, strata gmail
+login to kjb@initialcapacity.io MDM profile
+install homebrew
+login to github
+install emacs-plus per kyleconfig
+import Emacs PK with ultimate trust to GPG Suite
+created new SSH key for github and imported
+mkdir Source/Personal
+git@github.com:KyleBarton/KyleConfig.git
+ln -s Source/Personal/KyleConfig/vanill_emacs/.emacs .emacs
+ln -s Source/Personal/KyleConfig/vanilla_emacs/.emacs_custom_packages .emacs_custom_packages
+brew install hammerspoon
+ln -s Source/Personal/KyleConfig/OSX/.hammerspoon .hammerspoon
+start hammerspoon
+cp Source/Personal/KyleConfig/OSX/custom.hidutil.capslock.plist Library/LaunchAgents/custom.hidutil.capslock.plist
+launchctl load -w custom.hidutil.capslock.plist
+brew services start emacs-plus@29
+brew install CMake
+brew install --cask maestral
+start maestral and link to ~/Dropbox
+ApplePressAndHoldEnabled -> false; InitialKeyRepeat -> 15; KeyRepeat -> 2; restart needed -> keyboard full speed
+install Jetbrains Mono Font
