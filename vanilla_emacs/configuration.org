@@ -1239,7 +1239,7 @@ a shell command from 'dired-current-directory
 **** Search
 Note: Probably best to write this stuff in init.el, and move over afterwards
 Intense filesystem/symbol searches here.
-- Assumes ag installed
+- Assumes +ag+ ripgrep installed
 - Assumes fzf installed
 
 
@@ -1252,6 +1252,7 @@ Intense filesystem/symbol searches here.
   (define-key search-map (kbd "s") 'consult-ripgrep)
   (define-key search-map (kbd "e") 'evil-iedit-state/iedit-mode)
   (define-key search-map (kbd "r") 'replace-string)
+  (define-key search-map (kbd "l") 'consult-line)
 #+END_SRC
 
 **** Project Manipulation
