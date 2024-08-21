@@ -114,14 +114,20 @@
     (erase-buffer)))
 
 (defun chatgpt-send-prompt ()
-  "Send the prompt from the input buffer and handle the response."
+  "Send the prompt from the input buffer, update the log, and then send the entire log to the API."
   (interactive)
   (let ((prompt (buffer-substring-no-properties (point-min) (point-max))))
+    ;; Insert the current prompt into the log buffer
     (with-current-buffer chatgpt-log-buffer-name
       (goto-char (point-max))
       (insert (format "User: %s\n" prompt)))
+    ;; Clear the visual buffers
     (chatgpt-clear-buffers)
-    (chatgpt-call-api prompt)))
+    ;; Send the entire log as the prompt to the API
+    (let ((full-log (with-current-buffer chatgpt-log-buffer-name
+                      (buffer-substring-no-properties (point-min) (point-max)))))
+      (chatgpt-call-api full-log))))
+
 
 (defvar chatgpt-previous-major-mode nil
   "Stores the major mode that was active before entering chatgpt-mode.")
