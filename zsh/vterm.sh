@@ -10,6 +10,8 @@
 
 # you need coreutils on a mac in order to get `realpath` (see find_file): `brew install coreutils`
 
+export DOGNAME=nellie
+
 vterm_printf() {
     if [ -n "$TMUX" ] && ([ "${TERM%%-*}" = "tmux" ] || [ "${TERM%%-*}" = "screen" ] ); then
         # Tell tmux to pass the escape sequences through

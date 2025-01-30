@@ -75,6 +75,13 @@
 	      (eval (lsp-ui-sideline-mode))))
   (add-hook 'haskell-literate-mode-hook #'lsp))
 
+(use-package go-mode
+  :ensure t
+  :config
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  (setq-default gofmt-command "goimports"))
+(add-hook 'go-mode-hook #'lsp-deferred)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
