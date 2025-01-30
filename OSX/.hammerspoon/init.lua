@@ -99,8 +99,8 @@ end
 -- will have to be aware of certain hs lua functions, which isn't
 -- great. Perhaps I should just agree on an interface on the other
 -- end.
-function openOptionsWindow(windowName, ivyFunc, options)
-   ecUtils.callIvyFunc(windowName, ivyFunc, options)
+function openOptionsWindow(windowName, crFunc, options)
+   ecUtils.callFunc(windowName, crFunc, options)
    hs.timer.doAfter(0.3, function() focusWindowByTitle(windowName) end)
 end
 

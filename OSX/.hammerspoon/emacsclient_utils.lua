@@ -75,7 +75,7 @@ function mod.evalNoFrame(elisp)
 
 end
 
-function mod.callIvyFunc(windowName, ivyFunc, ivyOptions)
+function mod.callFunc(windowName, ivyFunc, ivyOptions)
 
    local ivyOptionsList = mod.luaArrayToElispList(ivyOptions)
 

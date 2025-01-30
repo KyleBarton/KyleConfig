@@ -259,13 +259,13 @@ Everything after this should use use-package for management
 *** Theming
 **** Doom
 #+BEGIN_SRC emacs-lisp
-  (use-package doom-themes
-    :ensure t
-    :config
-    ;; Global settings (defaults)
-    (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-          doom-themes-enable-italic t) ; if nil, italics is universally disabled
-    (load-theme 'doom-one t))
+  ;; (use-package doom-themes
+  ;;   :ensure t
+  ;;   :config
+  ;;   ;; Global settings (defaults)
+  ;;   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+  ;; 	  doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  ;;   (load-theme 'doom-one t))
 #+END_SRC
 **** Spacemacs (Inactive)
 #+BEGIN_SRC emacs-lisp
@@ -278,10 +278,25 @@ Everything after this should use use-package for management
 Install poet, but just activate it when you are doing writing and it
 makes sense for your eyes.
 #+BEGIN_SRC emacs-lisp
-  (use-package poet-theme
-    :ensure t)
+  ;;   (set-face-attribute 'default nil :family "DejaVu Sans Mono" :height 200)
+  ;;   (set-face-attribute 'fixed-pitch nil :family "DejaVu Sans Mono")
+  ;;   (set-face-attribute 'variable-pitch nil :family "Baskerville")
+  ;; (use-package poet-theme
+  ;;   :ensure t
+  ;;   :config
+  ;;   (add-hook 'text-mode-hook
+  ;;             (lambda ()
+  ;;               (variable-pitch-mode 1)))
+  ;; ;; (setq poet-theme-variable-headers nil)
+  ;;   (load-theme 'poet t))
 #+END_SRC
 
+Trying to fix the height thing:
+#+BEGIN_SRC emacs-lisp
+;; (advice-add 'poet-theme--height :around (lambda (orig-fun multiplier)
+;;     (face-attribute 'default :height)))
+;; (load-theme 'poet t)
+#+END_SRC
 **** Fonts
 ***** all-the-icons
 Using font-family-list to download ATI only once
@@ -297,6 +312,7 @@ Use `exec-path-from-shell` to copy the shell environment over into
 Emacs when it starts in OS X. The MacOs application launcher doesn't
 really handle the environment very well, so best to just copy shell
 behavior
+- Note that this only copies $PATH and $MANPATH, which is interesting. See `exec-path-from-shell-variables`
 #+BEGIN_SRC emacs-lisp
   (use-package exec-path-from-shell
     :config
@@ -1130,6 +1146,7 @@ Enable some pasting
   (define-key window-map (kbd "w") 'ace-select-window)
   (define-key window-map (kbd "=") 'balance-windows)
   (define-key window-map (kbd "r") 'kjb/cycle-window-size)
+  (define-key window-map (kbd "FD") #'delete-frame)
 #+END_SRC
 
 **** Execution Map
@@ -1479,6 +1496,8 @@ Make a singleton dired buffer, and various commands to navigate with it:
 - thedired-from-here: function to navigate thedired-buffer-name to default-directory
 - that might be... it? So simple
 - idk my current dired setup is pretty smooth
+**** <2024-08-03>
+Funnily, now that I'm a more common dired user, this feels like a bad idea. I've grown to really like the lightweight feeling of the dired buffer.
 
 *** Some things while watching emacs-from-scratch on dired:
 *evil-collection-define-key* to define multiple keys for a keymap!

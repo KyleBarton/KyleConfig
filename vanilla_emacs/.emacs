@@ -4,7 +4,25 @@
 ;; Set up GTD (may move this to org some day)
 (load (concat (getenv "HOME") "/.emacs_custom_packages/gtd.el"))
 
+;; Set up my WIP theme so I can spend some time with it
+;; Some notes
+;; - I really only use two colors: one for in/next/waiting for, and one for someday/maybe (by stealing org-cite).
+;;   - it would be good to mix this up a bit
+;;   - really like the org-cite color right now: it's #57b6be
+;; - org-done already looks pretty good, probably don't need to mess with that
+(load (concat (getenv "HOME") "/.emacs_custom_packages/wip_theme.el"))
+  ;; (use-package doom-themes
+  ;;   :ensure t
+  ;;   :config
+  ;;   ;; Global settings (defaults)
+  ;;   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+  ;; 	  doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  ;;   (load-theme 'doom-one t))
+
+
 (setq split-height-threshold nil)
+;; Always split horizontally
+(setq split-width-threshold 1)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;NEW LANGUAGE SUPPORT ;;;;;;;;;;;;;;;;;;;;;

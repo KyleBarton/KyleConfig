@@ -65,6 +65,23 @@ to hammerspoon via IPC"
   (remove-hook 'org-capture-after-finalize-hook #'hs-org-capture/hs-callback)
   (delete-frame))
 
+;; this doesn't work because you can't delete frame until org capture is completed
+(defun hs-org-capture/capture-in-floating-frame-v2 (window-name capture-fn &rest args)
+  "Performs an org capture command in a floating frame. Uses hooks
+to ensure `hs-org-capture/hs-callback' is called once after the
+capture is completed."
+  (unwind-protect
+      (with-current-buffer (get-buffer-create window-name)
+	(make-frame `((auto-raise . t)
+		(name . ,window-name)
+		(menu-bar-lines . 0)
+		(undecorated . t)
+		(left . 0.5)
+		(top . 0.5)
+		(height . 0.3)
+		(width . 0.35)))
+	(apply capture-fn args))
+    (delete-frame)))
 
 (defun hs-org-capture/capture-in-floating-frame (window-name capture-fn &rest args)
   "Performs an org capture command in a floating frame. Uses hooks
