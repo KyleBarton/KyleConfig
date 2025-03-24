@@ -1,0 +1,40 @@
+rectangle -- DONE with brew --cask
+oh my zsh -- DONE via its own curl command
+ - Note that I should probably do this early because other stuff - like brew - wants to mess with my zshrc and omz blows that file away (though it does back it up)
+github key -- DONE with 'ssh-keygen -t ed25519 -C "kjbarton4@gmail.com"'
+kyleconfig -- DONE git clone git@github.com:KyleBarton/KyleConfig.git in Source/Personal
+
+soft links:
+ - ln -s ~/Source/Personal/KyleConfig/vanilla_emacs/.emacs .emacs
+ - ln -s ~/Source/Personal/KyleConfig/vanilla_emacs/.emacs_custom_packages .emacs_custom_packages
+ - ln -s ~/Source/Personal/KyleConfig/vanilla_emacs/configuration.org configuration.org
+emacs-plus -- DONE with instructions from KyleConfig. Remember to include brew services start for next time.
+ - Honestly, this takes a while on first boot anyway. Might not be feasibly as scriptable.
+ - Native comp + getting org roam up to date
+
+Cmake needed (for vterm) -- DONE with brew
+ispell -- DONE with brew
+maestral -- DONE with brew --cask
+brew -- DONE
+enable key repeat: - DONE
+ - defaults write NSGlobalDomain ApplePressAndHoldEnabled -boolean false
+ - got from IC
+increase keystroke speed - DONE
+ - defaults write NSGlobalDomain InitialKeyRepeat -int 15
+ - defaults write NSGlobalDomain KeyRepeat -int 2
+ - got from IC
+show full path in finder bar (from IC): - DONE
+ - defaults write com.apple.finder '_FXShowPosixPathInTitle' -bool true
+
+gpgsuite -- DONE
+
+
+Hammerspoon -- DONE with brew
+- did need some setup afterwards for accessibility & screen recording
+
+
+
+Git config (got from IC setup):
+git config --global user.email kjbarton4@gmail.com
+git config --global user.name "KyleBarton"
+git config --global init.defaultBranch main
