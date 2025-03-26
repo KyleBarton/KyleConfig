@@ -948,8 +948,7 @@ solution set up.
   (use-package org-roam
     :config
     (setq org-roam-directory
-          (file-truename "/Users/kylebarton/Dropbox/Local/Org/org-roam"))
-    ;; use gpg file extension to force encryption
+          (file-truename (concat (getenv "HOME") "/Dropbox/Local/Org/org-roam"))) ;; use gpg file extension to force encryption
     (setq org-roam-capture-templates
           '(("d" "default" plain "%?"
              :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org.gpg"
