@@ -1,0 +1,66 @@
+// Zed keymap
+//
+// For information on binding keys, see the Zed
+// documentation: https://zed.dev/docs/key-bindings
+//
+// To see the default key bindings run `zed: open default keymap`
+// from the command palette.
+[
+  {
+    "bindings": {
+      "cmd-0": "project_panel::ToggleFocus",
+      "cmd-shift-t": "terminal_panel::ToggleFocus"
+      // "cmd-shift-1": "pane::Act" // For some reason the :: part of the command is what's messing up the fuzzy search here, that's interesting
+      // "cmd-shift-1": "pane::Foc"
+      // "f": "vim::Go"
+    }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "shift shift": "workspace::ToggleZoom"
+    }
+  },
+  {
+    "context": "Editor",
+    "bindings": {
+      "cmd-[": "pane::GoBack",
+      "cmd-]": "pane::GoForward"
+    }
+  },
+  {
+    "context": "Editor && vim_mode == insert",
+    "bindings": {
+      "f d": ["workspace::SendKeystrokes", "escape"]
+    }
+  },
+  {
+    "context": "Editor && vim_mode == normal",
+    "bindings": {
+      "g b": "pane::GoBack",
+      "g j": "pane::ActivatePreviousItem",
+      "g k": "pane::ActivateNextItem",
+      "space space": "command_palette::Toggle",
+      "space c l": "editor::ToggleComments",
+      "space f s": "workspace::Save",
+      "space l r r": "editor::Rename",
+      "space w j": "workspace::ActivatePaneDown",
+      "space w k": "workspace::ActivatePaneUp",
+      "space w h": "workspace::ActivatePaneLeft",
+      "space w l": "workspace::ActivatePaneRight"
+    }
+  },
+  {
+    "context": "Editor && vim_mode == visual",
+    "bindings": {
+      // "f d": ["workspace::SendKeystrokes", "escape"],
+      "space c l": "editor::ToggleComments"
+    }
+  },
+  {
+    "context": "Terminal",
+    "bindings": {
+      "escape": "terminal_panel::ToggleFocus"
+    }
+  }
+]
