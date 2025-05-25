@@ -441,9 +441,7 @@ Various buffer-related custom sources for consult.
 	   :face consult-buffer
 	   :action ,#'consult--buffer-action
 	   :state ,#'consult--buffer-state
-	   :items (closure
-		      (t)
-		      nil
+	   :items (lambda()
 		    (mapcar #'buffer-name
 			    (kjb/buffers-with-major-mode 'vterm-mode)))))
 
