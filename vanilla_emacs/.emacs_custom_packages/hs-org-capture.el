@@ -119,6 +119,21 @@ capture is completed."
    hs-org-capture/org-agenda-capture--frame-name
    #'org-capture nil "i"))
 
+;;;###autoload
+(defun hs-org-capture/org-roam-node-find ()
+  "Basically performs the function of org-roam-node-find, but additionally names the frame after the node."
+  (interactive)
+  (let* ((node (org-roam-node-read))
+	(node-name (org-roam-node-title node))
+	(now-frame (selected-frame))
+	(current-frames (frame-list))
+	(frame-names (mapcar (lambda (fr) (frame-parameter fr 'name)) current-frames)))
+    (if (member node-name frame-names)
+	(progn (select-frame-by-name node-name)
+	       (delete-frame now-frame))
+      (progn (org-roam-node-visit node)
+	     (set-frame-name node-name)))))
+
 (provide 'hs-org-capture)
 
 ;;; hs-org-capture.el ends here

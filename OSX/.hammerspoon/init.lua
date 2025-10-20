@@ -155,6 +155,16 @@ CommandMode:bind('', 'i', function()
       )
 end)
 
+CommandMode:bind('', 'o', function()
+  CommandMode:exit()
+  ecUtils.evalWithFrame("(hs-org-capture/org-roam-node-find)")
+  hs.timer.doAfter(0.3,
+     function()
+	hs.window.find("*Minibuf-1*"):focus()
+     end
+  )
+end)
+
 ----------------------------------------------------------------------------------------
 -- Functions built to be called by emacs
 ----------------------------------------------------------------------------------------
