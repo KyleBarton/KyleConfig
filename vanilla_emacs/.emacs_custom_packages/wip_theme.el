@@ -239,7 +239,4 @@
   "Enables variable pitch mode. Intended for use in `add-hook'."
   (variable-pitch-mode 1))
 
-
-(add-hook 'text-mode-hook #'kjb/enable-variable-pitch-mode)
-
 (enable-theme 'kjb/test-theme)

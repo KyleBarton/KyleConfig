@@ -542,7 +542,8 @@ So that I can use posframe here as well
     (add-hook 'neotree-mode-hook
               (lambda ()
                 (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
-                (define-key evil-normal-state-local-map (kbd "TAB") 'neotree-stretch-toggle)
+                (define-key evil-normal-state-local-map (kbd "TAB") 'neotree-enter)
+                (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
                 (define-key evil-normal-state-local-map (kbd "gr") 'neotree-refresh)
                 (define-key evil-normal-state-local-map (kbd "c") 'neotree-create-node)
                 (define-key evil-normal-state-local-map (kbd "d") 'neotree-delete-node))))
@@ -602,6 +603,7 @@ the filename once I've moved to the folder I want.
 (advice-add 'dired-do-rename :before #'dired-copy-filename-as-kill)
 #+END_SRC
 
+**** dired-listing-switch
 *** Shell Support (Vterm)
 Below I add vterm with some basic settings (requires evil).  Sets the
 environment variable `DOGNAME` as a diagnostic and because I added it
