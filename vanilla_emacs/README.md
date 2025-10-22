@@ -5,6 +5,9 @@ Use [emacs-plus](https://github.com/d12frosted/homebrew-emacs-plus)
 
 ```
 $ brew tap d12frosted/emacs-plus
+```
+
+```
 $ brew install emacs-plus@30 --with-xwidgets --with-imagemagick
 ```
 
