@@ -5,7 +5,7 @@ Use [emacs-plus](https://github.com/d12frosted/homebrew-emacs-plus)
 
 ```
 $ brew tap d12frosted/emacs-plus
-$ brew install emacs-plus@29  --with-no-frame-refocus  --with-xwidgets --with-imagemagick --with-native-comp
+$ brew install emacs-plus@30 --with-xwidgets --with-imagemagick
 ```
 
 Your first setup will take forever what with gcc running for the first
@@ -18,5 +18,5 @@ same as your old plist but this way you don't have to manage it, and
 brew services are nice to work with.
 
 ```
-$ brew services start emacs-plus@29
+$ brew services start emacs-plus@30
 ```
