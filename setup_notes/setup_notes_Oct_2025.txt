@@ -1,0 +1,39 @@
+install brave, set to default
+install 1Password for Mac, sign in
+install the 1Password browser extension, set activate to shift-cmd-P
+install vimium brower extension
+login to IC Gmail
+login to IC MDM profile
+download GPG suite
+add Emacs PK with ultimate trust to GPG suite
+install homebrew (and, by extension, XCode tools)
+login to Github
+create new ssh key in Github (ssh-keygen -t ed25519 -C "kjb@initialcapacity.io")
+download kyleconfig
+install emacs-plus per readme (note: update to emacs@30 instead of 29, and native-comp is now free, and --with-no-frame-refocus can be removed also). This can be the first commit from the new machine
+ln -s Source/Personal/KyleConfig/vanill_emacs/.emacs .emacs
+ln -s Source/Personal/KyleConfig/vanilla_emacs/.emacs_custom_packages .emacs_custom_packages
+ln -s Source/Personal/KyleConfig/vanilla_emacs/configuration.org configuration.org
+brew install --cask maestral
+login to dropbox via maestral, give it time for the stuff to download
+while waiting, install Jetbrains Mono font
+brew install CMake (needed for VTerm)
+cp Source/Personal/KyleConfig/OSX/custom.hidutil.capslock.plist Library/LaunchAgents/custom.hidutil.capslock.plist
+brew services start emacs-plus@30
+launchctl load -w custom.hidutil.capslock.plist
+brew install hammerspoon
+ln -s Source/Personal/KyleConfig/OSX/.hammerspoon .hammerspoon
+start hammerspoon
+give hammerspoon accessibility
+defaults write NSGlobalDomain ApplePressAndHoldEnabled -boolean false
+defaults write NSGlobalDomain KeyRepeat -int 2
+defaults write NSGlobalDomain InitialKeyRepeat -int 15
+restart for hammerspoon + defaults
+install oh-my-zsh (note - should be done earlier next time, since it clobbers zshrc)
+add the vterm.sh stuff:
+if [[ "$INSIDE_EMACS" = 'vterm' ]]
+then
+    source /Users/kylebarton/Source/Personal/KyleConfig/zsh/vterm.sh 
+fi
+install and configure rectangle
+install ispell (brew install ispell)
